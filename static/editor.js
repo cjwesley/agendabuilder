@@ -115,7 +115,72 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const pullBtn = document.getElementById("legistar-pull");
   if (pullBtn) pullBtn.addEventListener("click", () => legistarPullFlow(pullBtn));
+
+  document.querySelectorAll(".draft-btn").forEach(btn => {
+    btn.addEventListener("click", () => draftFlow(btn));
+  });
 });
+
+async function draftFlow(btn) {
+  const kind = btn.dataset.kind;
+  const target = btn.dataset.target;
+  const date = document.querySelector('input[name="meeting_date"]').value;
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Drafting…";
+  try {
+    const body = { date, section_idx: parseInt(btn.dataset.sectionIdx, 10) };
+    if (btn.dataset.articleIdx !== undefined) body.article_idx = parseInt(btn.dataset.articleIdx, 10);
+    if (btn.dataset.itemIdx !== undefined) body.item_idx = parseInt(btn.dataset.itemIdx, 10);
+
+    const r = await fetch(`/draft/${kind}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await r.json();
+    if (!r.ok) {
+      showFlash(`Draft failed: ${data.error || r.statusText}`, "err");
+      return;
+    }
+    fillDraftIntoForm(kind, target, data);
+    showFlash("Draft filled. Review and Save.", "ok");
+  } catch (e) {
+    showFlash(`Draft failed: ${e.message}`, "err");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
+}
+
+function fillDraftIntoForm(kind, targetPrefix, draft) {
+  // Mapping for each kind: form-field suffix → draft field
+  const maps = {
+    feature: {
+      ".headline": "headline",
+      ".tag": "tag",
+      ".body_md": "body_md",
+      ".pullquote.label": "pullquote_label",
+      ".pullquote.text": "pullquote_text",
+    },
+    study: {
+      ".headline": "headline",
+      ".body": "body",
+    },
+    compact: {
+      ".text": "text",  // RegularItem.text gets the editorial frame
+    },
+  };
+  const map = maps[kind] || {};
+  for (const [suffix, field] of Object.entries(map)) {
+    const name = targetPrefix + suffix;
+    const el = document.querySelector(`[name="${name}"]`);
+    if (el && draft[field] !== undefined && draft[field] !== "") {
+      el.value = draft[field];
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  }
+}
 
 async function legistarPullFlow(btn) {
   btn.disabled = true;

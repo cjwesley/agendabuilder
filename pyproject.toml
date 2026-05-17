@@ -11,6 +11,7 @@ dependencies = [
     "markdown-it-py>=3.0",
     "playwright>=1.47",
     "httpx>=0.27",
+    "anthropic>=0.92",
 ]
 
 [dependency-groups]

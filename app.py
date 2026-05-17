@@ -16,6 +16,7 @@ from flask import (
 )
 from pydantic import ValidationError
 
+import drafter
 from formparse import form_to_issue_dict
 from legistar import (
     _cached_client,
@@ -302,6 +303,91 @@ def render_export(date_str: str):
 @app.get("/out/<path:path>")
 def serve_out(path: str):
     return send_from_directory(OUT_DIR, path)
+
+
+@app.post("/draft/feature")
+def draft_feature_route():
+    seed = _seed_from_request("feature")
+    if isinstance(seed, tuple):
+        return seed
+    try:
+        draft = drafter.draft_feature(seed)
+    except RuntimeError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": f"Draft failed: {e!s}"}), 502
+    return jsonify(draft.model_dump())
+
+
+@app.post("/draft/study")
+def draft_study_route():
+    seed = _seed_from_request("study")
+    if isinstance(seed, tuple):
+        return seed
+    try:
+        draft = drafter.draft_study(seed)
+    except RuntimeError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": f"Draft failed: {e!s}"}), 502
+    return jsonify(draft.model_dump())
+
+
+@app.post("/draft/compact")
+def draft_compact_route():
+    seed = _seed_from_request("compact")
+    if isinstance(seed, tuple):
+        return seed
+    try:
+        draft = drafter.draft_compact(seed)
+    except RuntimeError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": f"Draft failed: {e!s}"}), 502
+    return jsonify(draft.model_dump())
+
+
+def _seed_from_request(kind: str):
+    """Pull the source-material seed from the JSON body or the loaded issue.
+
+    Accepts either:
+      {"seed": {title, legistar_ids, ...}}                      — direct
+      {"date": "YYYY-MM-DD", "section_idx": N, ...locators...}  — indirect
+    Returns either a seed dict or a (response, status) tuple to short-circuit.
+    """
+    payload = request.get_json(silent=True) or {}
+    if "seed" in payload:
+        return payload["seed"]
+    # indirect: dig into the saved issue
+    if "date" in payload and "section_idx" in payload:
+        try:
+            issue = load_issue(payload["date"])
+            sec = issue.sections[int(payload["section_idx"])]
+        except Exception as e:
+            return jsonify({"error": f"Could not resolve section: {e!s}"}), 400
+        if kind == "feature":
+            article_idx = int(payload.get("article_idx", 0))
+            article = sec.articles[article_idx]
+            return {
+                "title": article.headline,
+                "legistar_ids": list(article.legistar_ids),
+                "overview": article.body_md,
+            }
+        elif kind == "study":
+            item = sec.items[int(payload.get("item_idx", 0))]
+            return {
+                "title": item.headline,
+                "legistar_ids": list(item.legistar_ids),
+                "overview": item.body,
+            }
+        elif kind == "compact":
+            item = sec.items[int(payload.get("item_idx", 0))]
+            return {
+                "title": item.name,
+                "legistar_ids": list(item.legistar_ids),
+                "overview": item.text,
+            }
+    return jsonify({"error": "Provide either {seed: {...}} or {date, section_idx, ...}"}), 400
 
 
 @app.get("/new")

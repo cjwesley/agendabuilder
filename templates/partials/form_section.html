@@ -29,7 +29,14 @@
       {% for a in sec.articles %}
       {% set ap = p ~ '.articles[' ~ loop.index0 ~ ']' %}
       <div class="subform">
-        <div class="subform-header">Article {{ loop.index }}</div>
+        <div class="subform-header">
+          <span>Article {{ loop.index }}</span>
+          <button type="button" class="btn draft-btn"
+                  data-kind="feature"
+                  data-section-idx="{{ sec_idx }}"
+                  data-article-idx="{{ loop.index0 }}"
+                  data-target="{{ ap }}">Draft with AI</button>
+        </div>
         <div class="form-row inline">
           <div><label>Tag</label><input type="text" name="{{ ap }}.tag" value="{{ a.tag }}" required></div>
           <div><label>Legistar IDs (comma-sep on save TBD; one per index)</label>
@@ -64,7 +71,14 @@
       {% for it in sec.items %}
       {% set ip = p ~ '.items[' ~ loop.index0 ~ ']' %}
       <div class="subform">
-        <div class="subform-header">Study item {{ loop.index }}</div>
+        <div class="subform-header">
+          <span>Study item {{ loop.index }}</span>
+          <button type="button" class="btn draft-btn"
+                  data-kind="study"
+                  data-section-idx="{{ sec_idx }}"
+                  data-item-idx="{{ loop.index0 }}"
+                  data-target="{{ ip }}">Draft with AI</button>
+        </div>
         <div class="form-row inline">
           <div><label>Tag</label><input type="text" name="{{ ip }}.tag" value="{{ it.tag }}"></div>
           <div><label>Legistar IDs</label>
@@ -89,7 +103,14 @@
       {% for it in sec.items %}
       {% set ip = p ~ '.items[' ~ loop.index0 ~ ']' %}
       <div class="subform">
-        <div class="subform-header">Regular item {{ loop.index }}</div>
+        <div class="subform-header">
+          <span>Regular item {{ loop.index }}</span>
+          <button type="button" class="btn draft-btn"
+                  data-kind="compact"
+                  data-section-idx="{{ sec_idx }}"
+                  data-item-idx="{{ loop.index0 }}"
+                  data-target="{{ ip }}">Draft note with AI</button>
+        </div>
         <div class="form-row">
           <label>Tag</label>
           <input type="text" name="{{ ip }}.tag" value="{{ it.tag }}" required>
