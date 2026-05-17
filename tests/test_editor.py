@@ -73,8 +73,11 @@ def test_editor_renders(client):
     assert "Issue 02 · February 10, 2026" in html
     assert 'name="headlines[0].figure"' in html
     assert 'name="sections[0].articles[0].headline"' in html
-    # Iframe points at the snapshot view
-    assert 'src="/2026-02-10"' in html or "src=\"/2026-02-10\"" in html
+    # Preview iframe uses srcdoc with the inlined snapshot HTML
+    assert 'id="preview-pane"' in html
+    assert "srcdoc=" in html
+    # Snapshot content is HTML-escaped inside the srcdoc attribute.
+    assert "Issue 02 · February 10, 2026" in html
 
 
 def test_save_roundtrip_preserves_value(client):
@@ -112,6 +115,33 @@ def test_save_validation_failure_returns_422(client):
             break
     resp = client.post("/save/2026-02-10", data=MultiDict(payload), follow_redirects=False)
     assert resp.status_code == 422
+
+
+def test_preview_returns_snapshot_html(client):
+    issue = load_issue("2026-05-12")
+    payload = _issue_to_form_data(issue)
+    # Change subtitle to confirm preview reflects edits.
+    for i, (k, v) in enumerate(payload):
+        if k == "masthead.subtitle":
+            payload[i] = (k, "Edited subtitle for preview test.")
+            break
+    resp = client.post("/preview", data=MultiDict(payload))
+    assert resp.status_code == 200
+    body = resp.data.decode()
+    assert 'id="preview-pane"' in body
+    assert "Edited subtitle for preview test." in body
+    # The disk YAML stays untouched (preview never writes).
+    reloaded = load_issue("2026-05-12")
+    assert "Edited subtitle for preview test." not in reloaded.masthead.subtitle
+
+
+def test_preview_renders_error_on_invalid(client):
+    # Empty body: no fields → validation will fail.
+    resp = client.post("/preview", data={"issue_number": "1"})
+    assert resp.status_code == 200
+    body = resp.data.decode()
+    assert "Validation error" in body
+    assert 'id="preview-pane"' in body
 
 
 def test_blank_issue_validates():

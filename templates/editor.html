@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>Editor · {{ issue.computed_page_title() }}</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='editor.css') }}">
+<script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+<script src="{{ url_for('static', filename='editor.js') }}" defer></script>
 </head>
 <body>
 <div class="editor-shell">
@@ -15,15 +17,33 @@
         <div class="issue-pill">{{ issue.issue_label() }}</div>
       </div>
       <div class="toolbar-actions">
-        <a class="btn" href="{{ url_for('show_issue', date_str=issue.meeting_date.isoformat()) }}" target="snapshot-preview">Reload preview</a>
-        <button form="issue-form" type="submit" class="primary">Save</button>
+        <label style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ed-slate);">
+          <input type="radio" name="render-mode" value="live" class="mode-radio"> Live
+        </label>
+        <label style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ed-slate);">
+          <input type="radio" name="render-mode" value="manual" class="mode-radio"> Manual
+        </label>
+        <button id="render-now" type="button" class="btn"
+                hx-post="{{ url_for('preview_issue') }}"
+                hx-include="#issue-form"
+                hx-target="#preview-pane"
+                hx-swap="outerHTML">Render now</button>
+        <button form="issue-form" type="submit" class="primary"
+                formaction="{{ url_for('save_issue', date_str=issue.meeting_date.isoformat()) }}"
+                formmethod="post">Save</button>
       </div>
     </div>
 
     <div class="form-pane-inner">
       {% if flash %}<div class="flash {{ flash_kind or '' }}">{{ flash }}</div>{% endif %}
 
-      <form id="issue-form" method="POST" action="{{ url_for('save_issue', date_str=issue.meeting_date.isoformat()) }}">
+      <form id="issue-form"
+            method="POST"
+            action="{{ url_for('save_issue', date_str=issue.meeting_date.isoformat()) }}"
+            hx-post="{{ url_for('preview_issue') }}"
+            hx-trigger="input changed delay:300ms, change"
+            hx-target="#preview-pane"
+            hx-swap="outerHTML">
 
         <div class="form-section">
           <div class="form-section-header"><h2>Issue</h2><span class="kind-pill">Header</span></div>
@@ -39,8 +59,8 @@
               </div>
             </div>
             <div class="form-row">
-              <label>Subtitle</label>
-              <textarea name="masthead.subtitle" rows="3" required>{{ issue.masthead.subtitle }}</textarea>
+              <label>Subtitle <span class="charcount"></span></label>
+              <textarea name="masthead.subtitle" rows="3" data-maxlen="280" required>{{ issue.masthead.subtitle }}</textarea>
             </div>
             <div class="form-row">
               <label>Convening</label>
@@ -64,12 +84,12 @@
             <div class="subform">
               <div class="subform-header">Headline {{ loop.index }}</div>
               <div class="form-row inline">
-                <div><label>Kicker</label><input type="text" name="headlines[{{ loop.index0 }}].kicker" value="{{ h.kicker }}" required></div>
-                <div><label>Figure</label><input type="text" name="headlines[{{ loop.index0 }}].figure" value="{{ h.figure }}" required></div>
+                <div><label>Kicker <span class="charcount"></span></label><input type="text" name="headlines[{{ loop.index0 }}].kicker" value="{{ h.kicker }}" data-maxlen="22" required></div>
+                <div><label>Figure <span class="charcount"></span></label><input type="text" name="headlines[{{ loop.index0 }}].figure" value="{{ h.figure }}" data-maxlen="10" required></div>
               </div>
               <div class="form-row">
-                <label>Caption</label>
-                <textarea name="headlines[{{ loop.index0 }}].caption" rows="2" required>{{ h.caption }}</textarea>
+                <label>Caption <span class="charcount"></span></label>
+                <textarea name="headlines[{{ loop.index0 }}].caption" rows="2" data-maxlen="180" required>{{ h.caption }}</textarea>
               </div>
             </div>
             {% endfor %}
@@ -107,8 +127,10 @@
     </div>
   </div>
 
-  <div class="preview-pane">
-    <iframe name="snapshot-preview" src="{{ url_for('show_issue', date_str=issue.meeting_date.isoformat()) }}"></iframe>
+  {# Initial preview-pane: srcdoc carries the snapshot HTML so subsequent
+     HTMX swaps replace this same shape. #}
+  <div id="preview-pane" class="preview-pane">
+    <iframe srcdoc="{{ initial_snapshot_html | e }}"></iframe>
   </div>
 
 </div>

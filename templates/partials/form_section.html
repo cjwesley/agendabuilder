@@ -39,8 +39,8 @@
           </div>
         </div>
         <div class="form-row">
-          <label>Headline</label>
-          <textarea name="{{ ap }}.headline" rows="2" required>{{ a.headline }}</textarea>
+          <label>Headline <span class="charcount"></span></label>
+          <textarea name="{{ ap }}.headline" rows="2" data-maxlen="120" required>{{ a.headline }}</textarea>
         </div>
         <div class="form-row">
           <label>Body (markdown; first paragraph gets the drop cap)</label>
@@ -139,8 +139,8 @@
           <div><label>Legistar ID</label><input type="text" name="{{ ip }}.legistar_id" value="{{ it.legistar_id }}"></div>
         </div>
         <div class="form-row">
-          <label>Name <span class="charcount">{{ it.name | length }}/80</span></label>
-          <input type="text" name="{{ ip }}.name" value="{{ it.name }}" maxlength="80" required>
+          <label>Name <span class="charcount"></span></label>
+          <input type="text" name="{{ ip }}.name" value="{{ it.name }}" data-maxlen="80" required>
         </div>
         {% if it.flag %}
         <div class="form-row">

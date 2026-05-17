@@ -119,11 +119,45 @@ def show_issue(date_str: str):
 @app.get("/edit/<date_str>")
 def edit_issue(date_str: str):
     issue = load_issue(date_str)
+    initial_snapshot = render_template("snapshot.html.j2", issue=issue)
     return render_template(
         "editor.html",
         issue=issue,
+        initial_snapshot_html=initial_snapshot,
         flash=request.args.get("flash"),
         flash_kind=request.args.get("flash_kind"),
+    )
+
+
+@app.post("/preview")
+def preview_issue():
+    """Lenient preview: render the snapshot from current form state.
+
+    Validation errors render an inline error fragment inside the preview pane
+    so the editor never silently stops updating.
+    """
+    raw_items = list(request.form.items(multi=True))
+    data = form_to_issue_dict(raw_items)
+    try:
+        issue = Issue.model_validate(data)
+    except ValidationError as e:
+        return render_template(
+            "partials/preview_pane.html",
+            snapshot_html=_validation_error_html(str(e)),
+        )
+    snapshot = render_template("snapshot.html.j2", issue=issue)
+    return render_template("partials/preview_pane.html", snapshot_html=snapshot)
+
+
+def _validation_error_html(message: str) -> str:
+    return (
+        "<!DOCTYPE html><html><body style='font-family:Georgia,serif;padding:24px;"
+        "background:#f6f1e6;color:#1a1a1a;line-height:1.5'>"
+        "<h2 style='color:#ff3eb6;margin:0 0 12px'>Validation error — fix the form to "
+        "see the preview again.</h2>"
+        "<pre style='white-space:pre-wrap;font-size:12px;background:#fff;border:1px solid "
+        "#ddd;padding:12px'>" + message.replace("<", "&lt;") + "</pre>"
+        "</body></html>"
     )
 
 
