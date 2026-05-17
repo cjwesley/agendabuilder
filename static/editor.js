@@ -112,4 +112,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const exportBtn = document.getElementById("export-png");
   if (exportBtn) exportBtn.addEventListener("click", () => exportPng(exportBtn));
+
+  const pullBtn = document.getElementById("legistar-pull");
+  if (pullBtn) pullBtn.addEventListener("click", () => legistarPullFlow(pullBtn));
 });
+
+async function legistarPullFlow(btn) {
+  btn.disabled = true;
+  btn.textContent = "Loading events…";
+  try {
+    const r = await fetch("/legistar/events");
+    const body = await r.json();
+    if (!r.ok) {
+      showFlash(`Legistar lookup failed: ${body.error || r.statusText}`, "err");
+      return;
+    }
+    const events = body.events || [];
+    if (events.length === 0) {
+      showFlash("No upcoming Board events found.", "err");
+      return;
+    }
+    const labels = events.map((e, i) => `${i + 1}. ${e.date || "?"} — event ${e.event_id} (${e.agenda_status || "no status"})`);
+    const choice = prompt(
+      "Pick an event by number:\n" + labels.join("\n"),
+      "1"
+    );
+    if (!choice) return;
+    const idx = parseInt(choice, 10) - 1;
+    if (Number.isNaN(idx) || idx < 0 || idx >= events.length) {
+      showFlash("Invalid selection.", "err");
+      return;
+    }
+    btn.textContent = "Importing…";
+    const importResp = await fetch("/legistar/import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event_id: events[idx].event_id }),
+    });
+    const importBody = await importResp.json();
+    if (!importResp.ok) {
+      showFlash(`Import failed: ${importBody.error || importResp.statusText}`, "err");
+      return;
+    }
+    showFlash(
+      `Imported issue ${importBody.issue_number} for ${importBody.date} (${importBody.triage_count} triage). Redirecting…`,
+      "ok"
+    );
+    setTimeout(() => { window.location.href = importBody.edit_url; }, 1200);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Pull from Legistar";
+  }
+}

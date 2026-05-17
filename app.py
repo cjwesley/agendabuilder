@@ -17,11 +17,17 @@ from flask import (
 from pydantic import ValidationError
 
 from formparse import form_to_issue_dict
+from legistar import (
+    _cached_client,
+    event_summary,
+    find_board_body_id,
+    import_event,
+    list_events,
+)
 from render import install_filters, render_both, write_html
 from schema import (
     CivicNotesSection,
     ConsentSection,
-    FeatureSection,
     FooterMeetingDetails,
     FooterStrip,
     Headline,
@@ -193,12 +199,76 @@ def save_issue(date_str: str):
         if old_path.exists():
             old_path.unlink()
         return redirect(
-            url_for("edit_issue", date_str=new_date_str) + "?flash=Saved+(date+changed)&flash_kind=ok"
+            url_for("edit_issue", date_str=new_date_str)
+            + "?flash=Saved+(date+changed)&flash_kind=ok"
         )
 
     return redirect(
         url_for("edit_issue", date_str=new_date_str) + "?flash=Saved&flash_kind=ok"
     )
+
+
+@app.get("/legistar/events")
+def legistar_events():
+    """Return a JSON list of recent Board of Trustees events for the picker."""
+    try:
+        slug = _cached_client()
+        body_id = find_board_body_id(slug)
+        events = list_events(slug, body_id, limit=20)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 502
+    return jsonify(
+        {"events": [event_summary(e) for e in events], "client": slug}
+    )
+
+
+@app.post("/legistar/import")
+def legistar_import():
+    """Fetch a Legistar event, bucket items, write a new YAML, redirect to edit."""
+    payload = request.get_json(silent=True) or request.form
+    try:
+        event_id = int(payload.get("event_id"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "event_id required"}), 400
+    # issue_number: pick max(existing) + 1 unless provided
+    if payload.get("issue_number"):
+        try:
+            issue_number = int(payload.get("issue_number"))
+        except (TypeError, ValueError):
+            return jsonify({"error": "issue_number must be int"}), 400
+    else:
+        issue_number = _next_issue_number()
+
+    try:
+        issue = import_event(event_id, issue_number=issue_number)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 502
+
+    save_issue_to_disk(issue)
+    return jsonify(
+        {
+            "ok": True,
+            "date": issue.meeting_date.isoformat(),
+            "edit_url": url_for(
+                "edit_issue", date_str=issue.meeting_date.isoformat()
+            ),
+            "issue_number": issue.issue_number,
+            "triage_count": len(issue.triage),
+        }
+    )
+
+
+def _next_issue_number() -> int:
+    if not AGENDAS_DIR.exists():
+        return 1
+    nums = []
+    for p in AGENDAS_DIR.glob("*.yaml"):
+        try:
+            data = yaml.safe_load(p.read_text())
+            nums.append(int(data.get("issue_number", 0)))
+        except Exception:
+            continue
+    return (max(nums) + 1) if nums else 1
 
 
 @app.post("/render/<date_str>")

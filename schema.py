@@ -12,7 +12,6 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-
 # ---------- shared leaf models ----------
 
 class Pullquote(BaseModel):
@@ -258,6 +257,15 @@ class FooterStrip(BaseModel):
 ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
 
 
+class TriageItem(BaseModel):
+    """Legistar items not yet placed into a section — wait in the triage drawer."""
+    name: str
+    legistar_id: str = ""
+    agenda_section: str = ""
+    matter_type: str = ""
+    raw_title: str = ""
+
+
 class Issue(BaseModel):
     issue_number: int = Field(ge=1, le=999)
     meeting_date: date
@@ -267,6 +275,8 @@ class Issue(BaseModel):
     headlines: list[Headline] = Field(min_length=3, max_length=3)
     sections: list[Section]
     footer: FooterStrip
+    triage: list[TriageItem] = []
+    legistar_event_id: int | None = None
 
     def present_sections(self) -> list[tuple[str, Section]]:
         """Yield (roman_numeral, section) for sections that should render."""

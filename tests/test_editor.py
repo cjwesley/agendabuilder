@@ -6,7 +6,6 @@ import shutil
 from pathlib import Path
 
 import pytest
-
 from werkzeug.datastructures import MultiDict
 
 from app import AGENDAS_DIR, app, blank_issue, load_issue, save_issue_to_disk
@@ -91,7 +90,7 @@ def test_save_roundtrip_preserves_value(client):
     payload = _issue_to_form_data(issue)
 
     # Mutate: change the first headline figure.
-    for i, (k, v) in enumerate(payload):
+    for i, (k, _v) in enumerate(payload):
         if k == "headlines[0].figure":
             payload[i] = (k, "42")
             break
@@ -109,7 +108,7 @@ def test_save_validation_failure_returns_422(client):
     issue = load_issue("2026-02-10")
     payload = _issue_to_form_data(issue)
     too_long = "x" * 200
-    for i, (k, v) in enumerate(payload):
+    for i, (k, _v) in enumerate(payload):
         if k.startswith("sections[2].items[0].name"):  # consent section
             payload[i] = (k, too_long)
             break
@@ -121,7 +120,7 @@ def test_preview_returns_snapshot_html(client):
     issue = load_issue("2026-05-12")
     payload = _issue_to_form_data(issue)
     # Change subtitle to confirm preview reflects edits.
-    for i, (k, v) in enumerate(payload):
+    for i, (k, _v) in enumerate(payload):
         if k == "masthead.subtitle":
             payload[i] = (k, "Edited subtitle for preview test.")
             break

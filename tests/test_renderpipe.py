@@ -71,7 +71,6 @@ def test_serve_out_returns_html_file(client):
         return render.write_html(issue, out_dir), render.write_html(issue, out_dir)
 
     # Just hit the partial path via a launch failure path.
-    import app as appmod
 
     def force_png_fail(*a, **kw):
         raise RuntimeError("png disabled for test")
@@ -85,7 +84,7 @@ def test_serve_out_returns_html_file(client):
     # Now the HTML file should be servable.
     resp = client.get("/out/2026-05-12.html")
     assert resp.status_code == 200
-    assert "Issue 03 · May 12, 2026".encode("utf-8") in resp.data
+    assert "Issue 03 · May 12, 2026".encode() in resp.data
 
 
 @pytest.mark.skipif(

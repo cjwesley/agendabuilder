@@ -32,6 +32,7 @@
                 data-render-url="{{ url_for('render_export', date_str=issue.meeting_date.isoformat()) }}">
           Export PNG
         </button>
+        <button id="legistar-pull" type="button" class="btn">Pull from Legistar</button>
         <button form="issue-form" type="submit" class="primary"
                 formaction="{{ url_for('save_issue', date_str=issue.meeting_date.isoformat()) }}"
                 formmethod="post">Save</button>
