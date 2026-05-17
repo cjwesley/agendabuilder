@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import os
+import secrets
 from datetime import date
 from pathlib import Path
 
 import yaml
 from flask import (
     Flask,
+    Response,
     abort,
     jsonify,
     redirect,
@@ -44,6 +47,48 @@ OUT_DIR = Path(__file__).parent / "out"
 
 app = Flask(__name__)
 install_filters(app.jinja_env)
+
+
+# ---------- single-user basic auth ----------
+
+_BASIC_AUTH_USER = os.environ.get("BASIC_AUTH_USER")
+_BASIC_AUTH_PASS = os.environ.get("BASIC_AUTH_PASS")
+
+
+def _basic_auth_configured() -> bool:
+    return bool(_BASIC_AUTH_USER and _BASIC_AUTH_PASS)
+
+
+def _unauthorized() -> Response:
+    return Response(
+        "Auth required.",
+        status=401,
+        headers={"WWW-Authenticate": 'Basic realm="The Agenda Engine"'},
+    )
+
+
+@app.before_request
+def _enforce_basic_auth():
+    # /healthz is unauthenticated so Fly's checks pass without credentials.
+    if request.path == "/healthz":
+        return None
+    if not _basic_auth_configured():
+        # No credentials set → no auth. Useful for local dev.
+        return None
+    auth = request.authorization
+    if (
+        auth is None
+        or auth.type != "basic"
+        or not secrets.compare_digest(auth.username or "", _BASIC_AUTH_USER)
+        or not secrets.compare_digest(auth.password or "", _BASIC_AUTH_PASS)
+    ):
+        return _unauthorized()
+    return None
+
+
+@app.get("/healthz")
+def healthz():
+    return jsonify({"ok": True}), 200
 
 
 # ---------- IO helpers ----------
