@@ -50,6 +50,58 @@ function attachCharCounters() {
 // preview swaps target the preview pane, not the form).
 document.body.addEventListener("htmx:afterSwap", attachCharCounters);
 
+async function exportPng(btn) {
+  const url = btn.dataset.renderUrl;
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Rendering…";
+  try {
+    const resp = await fetch(url, { method: "POST" });
+    const body = await resp.json();
+    if (resp.ok) {
+      btn.textContent = "Export PNG";
+      const links = [];
+      if (body.html) links.push(`<a href="${body.html}" target="_blank">HTML</a>`);
+      if (body.png) links.push(`<a href="${body.png}" target="_blank">PNG</a>`);
+      showFlash(`Exported: ${links.join(" · ")}`, "ok");
+    } else if (resp.status === 207) {
+      btn.textContent = "Export PNG";
+      const htmlLink = body.html
+        ? `<a href="${body.html}" target="_blank">HTML</a>`
+        : "(no html)";
+      showFlash(
+        `HTML exported (${htmlLink}); PNG failed: ${body.error || "(no detail)"}`,
+        "err"
+      );
+    } else {
+      btn.textContent = "Export PNG";
+      showFlash(`Export failed: ${body.error || resp.statusText}`, "err");
+    }
+  } catch (e) {
+    btn.textContent = "Export PNG";
+    showFlash(`Export failed: ${e.message}`, "err");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function showFlash(html, kind) {
+  let host = document.querySelector(".form-pane-inner");
+  if (!host) return;
+  let flash = host.querySelector(".flash.transient");
+  if (!flash) {
+    flash = document.createElement("div");
+    flash.className = "flash transient";
+    host.insertBefore(flash, host.firstChild);
+  }
+  flash.classList.remove("ok", "err");
+  if (kind) flash.classList.add(kind);
+  flash.innerHTML = html;
+  setTimeout(() => {
+    if (flash.parentElement) flash.parentElement.removeChild(flash);
+  }, 8000);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   setMode(currentMode());
   attachCharCounters();
@@ -57,4 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".mode-radio").forEach(r => {
     r.addEventListener("change", e => setMode(e.target.value));
   });
+
+  const exportBtn = document.getElementById("export-png");
+  if (exportBtn) exportBtn.addEventListener("click", () => exportPng(exportBtn));
 });

@@ -7,15 +7,17 @@ import yaml
 from flask import (
     Flask,
     abort,
+    jsonify,
     redirect,
     render_template,
     request,
+    send_from_directory,
     url_for,
 )
 from pydantic import ValidationError
 
 from formparse import form_to_issue_dict
-from render import install_filters
+from render import install_filters, render_both, write_html
 from schema import (
     CivicNotesSection,
     ConsentSection,
@@ -31,6 +33,7 @@ from schema import (
 )
 
 AGENDAS_DIR = Path(__file__).parent / "agendas"
+OUT_DIR = Path(__file__).parent / "out"
 
 app = Flask(__name__)
 install_filters(app.jinja_env)
@@ -196,6 +199,39 @@ def save_issue(date_str: str):
     return redirect(
         url_for("edit_issue", date_str=new_date_str) + "?flash=Saved&flash_kind=ok"
     )
+
+
+@app.post("/render/<date_str>")
+def render_export(date_str: str):
+    """Render an issue to HTML + PNG on disk. Returns JSON with public paths."""
+    issue = load_issue(date_str)
+    try:
+        html_path, png_path = render_both(issue, OUT_DIR)
+    except Exception as e:
+        # PNG might fail (e.g. no browser); fall back to HTML-only and surface
+        # the error.
+        html_path = write_html(issue, OUT_DIR)
+        return (
+            jsonify(
+                {
+                    "html": url_for("serve_out", path=html_path.name),
+                    "png": None,
+                    "error": f"PNG rendering failed: {e!s}",
+                }
+            ),
+            207,
+        )
+    return jsonify(
+        {
+            "html": url_for("serve_out", path=html_path.name),
+            "png": url_for("serve_out", path=png_path.name),
+        }
+    )
+
+
+@app.get("/out/<path:path>")
+def serve_out(path: str):
+    return send_from_directory(OUT_DIR, path)
 
 
 @app.get("/new")

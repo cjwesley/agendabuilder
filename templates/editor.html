@@ -28,6 +28,10 @@
                 hx-include="#issue-form"
                 hx-target="#preview-pane"
                 hx-swap="outerHTML">Render now</button>
+        <button id="export-png" type="button" class="btn"
+                data-render-url="{{ url_for('render_export', date_str=issue.meeting_date.isoformat()) }}">
+          Export PNG
+        </button>
         <button form="issue-form" type="submit" class="primary"
                 formaction="{{ url_for('save_issue', date_str=issue.meeting_date.isoformat()) }}"
                 formmethod="post">Save</button>
