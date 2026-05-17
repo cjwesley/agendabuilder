@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Agenda · May 5, 2026</title>
+<style>
+  :root {
+    --ink:        #1a1a1a;
+    --ink-soft:   #2a2a2a;
+    --paper:      #f6f1e6;
+    --paper-2:    #efe8d6;
+    --rule:       #1a1a1a;
+    --blue:       #38b6ff;
+    --blue-deep:  #1a9de8;
+    --blue-soft:  #d9eeff;
+    --pink:       #ff66c4;
+    --pink-hot:   #ff3eb6;
+    --pink-soft:  #ffd9ee;
+    --slate:      #5a5a5a;
+    --serif:      Georgia, "Times New Roman", "Liberation Serif", serif;
+    --sans:       "Helvetica Neue", Helvetica, Arial, "Liberation Sans", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #d2cdbf;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .page {
+    width: 1080px;
+    margin: 0 auto;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    position: relative;
+  }
+  .page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(26,26,26,0.025) 1px, transparent 1px);
+    background-size: 4px 4px;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .page > * { position: relative; z-index: 2; }
+
+  .top-stripe { height: 5px; background: var(--pink); }
+
+  /* ============ LOGO — height-capped ============ */
+  .logo-banner {
+    width: 100%;
+    height: 220px;
+    background: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+  }
+  .logo-banner img {
+    height: 100%;
+    width: auto;
+    display: block;
+  }
+
+  /* ============ MASTHEAD ============ */
+  .masthead {
+    padding: 16px 56px 14px;
+    border-bottom: 3px double var(--rule);
+  }
+  .masthead-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--slate);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+    font-weight: 700;
+  }
+  .masthead-top .right { color: var(--pink-hot); }
+  .masthead-top a.eyebrow-link {
+    color: var(--pink-hot);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--pink-hot);
+    padding-bottom: 1px;
+  }
+  .masthead-top a.eyebrow-link .arrow {
+    margin-left: 4px;
+  }
+
+  .title-block {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    padding-top: 8px;
+  }
+  .title {
+    font-family: var(--serif);
+    font-weight: 700;
+    color: var(--ink);
+    font-style: italic;
+    line-height: 0.9;
+    letter-spacing: -2px;
+  }
+  .title .the {
+    font-size: 22px;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 0;
+    letter-spacing: 0;
+    color: var(--ink-soft);
+  }
+  .title .agenda { font-size: 56px; display: block; }
+  .title .accent-bar {
+    display: inline-block;
+    width: 56px;
+    height: 4px;
+    background: var(--pink);
+    vertical-align: middle;
+    margin-left: 10px;
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+    max-width: 460px;
+  }
+  .title-side {
+    flex: 1;
+    padding-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .full-agenda-link {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pink-hot);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--pink-hot);
+    padding-bottom: 1px;
+    letter-spacing: 0.2px;
+  }
+  .full-agenda-link .arrow {
+    font-style: normal;
+    font-weight: 700;
+    margin-left: 4px;
+  }
+  .meta-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule);
+    font-size: 13px;
+    color: var(--ink);
+    letter-spacing: 0.3px;
+  }
+  .meta-row > div { flex: 1; }
+  .meta-row strong {
+    font-family: var(--sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 11px;
+    color: var(--pink-hot);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .meta-row a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--blue-deep);
+  }
+
+  /* ============ HEADLINES ============ */
+  .headlines {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    border-bottom: 3px solid var(--rule);
+  }
+  .headline {
+    padding: 14px 28px 14px;
+    border-right: 1px solid var(--rule);
+    position: relative;
+  }
+  .headline:last-child { border-right: none; }
+  .headline .kicker {
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--pink-hot);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .headline .figure {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 50px;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: var(--ink);
+  }
+  .headline .figure::after {
+    content: "";
+    display: block;
+    width: 28px;
+    height: 3px;
+    background: var(--pink);
+    margin-top: 6px;
+  }
+  .headline .caption {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    max-width: 280px;
+  }
+
+  /* ============ SECTIONS ============ */
+  .section { padding: 18px 56px 4px; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 8px;
+    position: relative;
+  }
+  .section-header::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100px;
+    height: 3px;
+    background: var(--pink);
+  }
+  .section-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--blue-deep);
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+  .section-eyebrow {
+    margin-left: auto;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--slate);
+  }
+
+  /* ============ FEATURE STORIES ============ */
+  .feature {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 24px;
+    padding: 4px 0 20px;
+    border-bottom: 1px solid rgba(26,26,26,0.18);
+  }
+  .feature:last-child { border-bottom: none; padding-bottom: 6px; }
+  .feature-side {
+    border-right: 1px solid rgba(26,26,26,0.18);
+    padding-right: 24px;
+  }
+  .feature-tag {
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--blue-deep);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .feature-headline {
+    font-family: var(--serif);
+    font-size: 26px;
+    line-height: 1.1;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+  .feature-id {
+    margin-top: 8px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--slate);
+  }
+  .feature-body { font-size: 14.5px; line-height: 1.55; color: var(--ink); }
+  .feature-body p { margin-bottom: 10px; }
+  .feature-body p:last-child { margin-bottom: 0; }
+  .feature-body strong {
+    color: var(--ink);
+    font-weight: 700;
+    background: linear-gradient(transparent 60%, var(--pink-soft) 60%);
+    padding: 0 2px;
+  }
+  .pullquote {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: var(--pink-soft);
+    border-left: 4px solid var(--pink);
+    font-family: var(--serif);
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink);
+    font-style: italic;
+  }
+  .pullquote .label {
+    display: block;
+    font-style: normal;
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--pink-hot);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .drop-cap::first-letter {
+    font-family: var(--serif);
+    font-size: 50px;
+    float: left;
+    line-height: 0.85;
+    padding: 6px 8px 0 0;
+    font-weight: 700;
+    color: var(--pink-hot);
+  }
+
+  /* ============ STUDY (BLUE BLOCK) ============ */
+  .study {
+    background: var(--blue);
+    color: var(--ink);
+    padding: 26px 32px;
+    margin: 6px 0 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 28px;
+    align-items: start;
+    border-top: 4px solid var(--ink);
+    border-bottom: 4px solid var(--pink);
+  }
+  .study-mark {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .study-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--ink);
+    background: var(--paper);
+    font-weight: 700;
+    padding: 4px 10px;
+    display: inline-block;
+  }
+  .study-headline {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 10px;
+    line-height: 1.15;
+    letter-spacing: -0.3px;
+    color: var(--ink);
+  }
+  .study-body {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 760px;
+  }
+  .study-id {
+    margin-top: 8px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--ink);
+    opacity: 0.75;
+  }
+
+  /* ============ REGULAR ITEMS (list of compact spotlights) ============ */
+  .regular-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .regular-item {
+    border: 2px solid var(--ink);
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .regular-item .ri-tag {
+    grid-column: 1 / -1;
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--pink-hot);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .regular-item .ri-name {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+  }
+  .regular-item .ri-id {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--slate);
+    white-space: nowrap;
+  }
+  .regular-item .ri-text {
+    grid-column: 1 / -1;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  /* ============ CONSENT LIST (austere by default) ============ */
+  .consent-summary {
+    font-family: var(--serif);
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: -6px 0 8px;
+    max-width: 880px;
+  }
+  .consent-summary strong {
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .consent-list-minimal {
+    border-top: 1px solid rgba(26,26,26,0.25);
+    border-bottom: 1px solid rgba(26,26,26,0.25);
+  }
+  .consent-meta {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13.5px;
+    color: var(--slate);
+    margin: -8px 0 12px;
+  }
+  .consent-list {
+    border-top: 1px solid rgba(26,26,26,0.25);
+    border-bottom: 1px solid rgba(26,26,26,0.25);
+    margin-top: 4px;
+  }
+  .consent-row {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 12px;
+    align-items: baseline;
+    padding: 3px 4px;
+    border-bottom: 1px solid rgba(26,26,26,0.10);
+  }
+  .consent-row:last-child { border-bottom: none; }
+
+  /* Visual group break: extra padding only, no extra line */
+  .consent-row.group-break {
+    margin-top: 4px;
+    padding-top: 12px;
+  }
+
+  /* Total row at the bottom of the financial group */
+  .consent-total-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: baseline;
+    padding: 14px 4px 4px;
+    margin-top: 6px;
+    border-top: 2px solid var(--ink);
+  }
+  .consent-total-row .total-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+  }
+  .consent-total-row .total-amount {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+  .consent-footnote {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--slate);
+    margin-top: 8px;
+    padding: 0 4px;
+  }
+  .consent-row .marker {
+    font-family: var(--serif);
+    font-size: 13px;
+    color: var(--slate);
+    font-weight: 700;
+    text-align: center;
+  }
+  .consent-row.flagged .marker {
+    color: var(--pink-hot);
+    font-size: 14px;
+  }
+  .consent-row .name {
+    font-family: var(--serif);
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.2px;
+    line-height: 1.2;
+  }
+  .consent-row .id {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--slate);
+    white-space: nowrap;
+  }
+  .consent-row .why {
+    grid-column: 2 / 4;
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.25;
+    margin-top: -3px;
+    padding-bottom: 2px;
+    font-style: italic;
+  }
+  .consent-row .why::before {
+    content: "";
+    display: none;
+  }
+
+  /* ============ CIVIC NOTES (masonry: items flow into 2 columns by height) ============ */
+  .civic {
+    column-count: 2;
+    column-gap: 32px;
+    column-rule: 1px solid rgba(26,26,26,0.18);
+    margin-top: 4px;
+  }
+  .civic-block {
+    break-inside: avoid;             /* keeps a block from splitting across columns */
+    margin-bottom: 14px;
+    display: inline-block;           /* required for column flow + break-inside */
+    width: 100%;
+  }
+  .civic-block:last-child { margin-bottom: 0; }
+
+  .civic-label {
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--pink-hot);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  /* Side-block label uses blue */
+  .civic-block.side .civic-label { color: var(--blue-deep); }
+
+  .proc-list { display: grid; gap: 6px; }
+  .proc-row {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 10px;
+    align-items: baseline;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(26,26,26,0.10);
+  }
+  .proc-row:last-child { border-bottom: none; }
+  .proc-row .num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--pink-hot);
+    font-weight: 700;
+  }
+  .proc-row .name {
+    font-family: var(--serif);
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+    letter-spacing: -0.2px;
+  }
+  .proc-row .when {
+    font-size: 11px;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    white-space: nowrap;
+  }
+  .civic-block .body {
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .civic-block .body strong { font-weight: 700; }
+  .civic-block .id {
+    margin-top: 4px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 11.5px;
+    color: var(--slate);
+  }
+
+  /* ============ COMPRESSED 3-PANEL FOOTER ============ */
+  .footer-strip {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1.4fr;
+    background: var(--ink);
+    color: var(--paper);
+    border-top: 5px solid var(--pink);
+    margin-top: 0;
+  }
+  .fs-panel {
+    padding: 22px 24px;
+    border-right: 1px solid rgba(255,255,255,0.12);
+  }
+  .fs-panel:last-child { border-right: none; }
+  .fs-label {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--pink);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .fs-headline {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    color: var(--paper);
+    letter-spacing: 0;
+  }
+  .fs-headline .accent { color: var(--blue); }
+  .fs-body {
+    font-family: var(--serif);
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(246,241,230,0.92);
+  }
+  .fs-body a {
+    color: var(--blue);
+    text-decoration: none;
+    border-bottom: 1px solid var(--blue);
+  }
+  .fs-body strong {
+    font-family: var(--sans);
+    font-weight: 700;
+    color: var(--paper);
+  }
+  .fs-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 14px;
+  }
+  .fs-meta-cell {
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.3;
+    color: var(--paper);
+  }
+  .fs-meta-wide {
+    grid-column: 1 / -1;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 8px;
+    margin-top: 2px;
+  }
+  .fs-editor {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(246,241,230,0.78);
+  }
+  .fs-editor a {
+    color: var(--blue);
+    border-bottom: 1px solid var(--blue);
+    text-decoration: none;
+  }
+  .fs-editor .signature {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-family: var(--sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-size: 11px;
+    color: var(--paper);
+  }
+  .fs-editor .signature .pink { color: var(--pink); }
+  .fs-editor .signature .wesley {
+    background: linear-gradient(transparent 60%, rgba(255,102,196,0.35) 60%);
+    padding: 0 3px;
+  }
+  .bottom-stripe { height: 5px; background: var(--pink); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="top-stripe"></div>
+
+  <div class="logo-banner">
+    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="Cory J. Wesley · Oak Park Trustee" />
+  </div>
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <div><a class="eyebrow-link" href="https://www.oak-park.us/Government/Meetings/Village-Board-Agendas-Minutes-Videos">Read the full agenda packet<span class="arrow">→</span></a></div>
+      <div class="right">Issue 03 · May 12, 2026</div>
+    </div>
+
+    <div class="title-block">
+      <h1 class="title">
+        <span class="the">The</span>
+        <span class="agenda">Agenda<span class="accent-bar"></span></span>
+      </h1>
+      <div class="title-side">
+        <p class="subtitle">A reader’s guide to the May 12 Village Board meeting — three study sessions on dispatch reform, pavement, and police oversight, plus a cohousing escrow waiver and a 7-item consent agenda.</p>
+      </div>
+    </div>
+
+    <div class="meta-row">
+      <div><strong>Convening</strong>Tuesday, May 12 · 7:00 PM</div>
+      <div><strong>Where</strong>Council Chambers, Village Hall</div>
+      <div><strong>How to Join</strong>In person, or virtually via the Clerk at <a href="mailto:clerkwaters@oak-park.us">clerkwaters@oak-park.us</a></div>
+    </div>
+  </header>
+
+  <section class="headlines">
+    <div class="headline">
+      <div class="kicker">The Big Number</div>
+      <div class="figure">3</div>
+      <div class="caption">Study sessions on the agenda — CESSA mental-health dispatch, pavement management, and the CPOC semi-annual report.</div>
+    </div>
+    <div class="headline">
+      <div class="kicker">On the Table</div>
+      <div class="figure">18</div>
+      <div class="caption">Closed-session meeting dates spanning June 2024–March 2026 — a 21-month minutes backlog clears in one consent vote.</div>
+    </div>
+    <div class="headline">
+      <div class="kicker">For the Calendar</div>
+      <div class="figure">4</div>
+      <div class="caption">May proclamations: Public Works Week, Older Americans, APIDA Heritage, Jewish American Heritage.</div>
+    </div>
+  </section>
+
+  <!-- § I — STUDY SESSIONS (no Features this meeting; renumbered) -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">§ I</span>
+      <h2 class="section-title">Three Study Sessions</h2>
+      <span class="section-eyebrow">Discussion items · No votes</span>
+    </div>
+
+    <div class="study">
+      <div class="study-mark">¶</div>
+      <div>
+        <div class="study-tag">Study Session</div>
+        <h3 class="study-headline">CESSA: how the state’s mental-health dispatch law lands on Oak Park’s 911 system.</h3>
+        <p class="study-body">West Suburban Consolidated Dispatch Center (WSCDC) walks the Board through Community Emergency Services and Supports Act implementation — dispatch requirements, decision protocols, and the operational impact on the Village’s emergency response. CESSA reshapes how calls involving mental-health crises get routed; tonight’s presentation is about what that means at the dispatch board level.</p>
+        <p class="study-id">ID 26-230</p>
+      </div>
+    </div>
+
+    <div class="study">
+      <div class="study-mark">¶</div>
+      <div>
+        <div class="study-tag">Study Session</div>
+        <h3 class="study-headline">A pavement management plan, and the budget choices it forces.</h3>
+        <p class="study-body">CMAP’s consultant presents the Pavement Management Program developed under a 2025 technical assistance grant — a roadway condition assessment with budget scenarios for maintaining or improving the network. The recommendations feed directly into the upcoming budget and the 5-year Capital Improvement Plan. Tonight is the Board’s first look at the scenarios.</p>
+        <p class="study-id">ID 26-320</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- § II — REGULAR (compact spotlights) -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">§ II</span>
+      <h2 class="section-title">Also on the Regular Agenda</h2>
+      <span class="section-eyebrow">2 items · 1 vote, 1 report</span>
+    </div>
+
+    <div class="regular-list">
+      <div class="regular-item">
+        <div class="ri-tag">Regular Agenda · Up for vote</div>
+        <div class="ri-name">Oak Park Commons Cohousing — escrow waiver request</div>
+        <div class="ri-id">RES 26-198</div>
+        <div class="ri-text">A waiver of the Village Code’s requirement that 2% of each unit’s sales price be held in escrow for 15 months for unexpected building repairs. The cohousing project is asking the Village to release that obligation.</div>
+      </div>
+      <div class="regular-item">
+        <div class="ri-tag">Regular Agenda · Report received</div>
+        <div class="ri-name">CPOC semi-annual report</div>
+        <div class="ri-id">MOT 26-152</div>
+        <div class="ri-text">The Citizens Police Oversight Committee’s required semi-annual report on its activities and analysis over the preceding six months, per Village Code 2-30-2.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- § III — CONSENT -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">§ III</span>
+      <h2 class="section-title">Consent Agenda</h2>
+      <span class="section-eyebrow">7 items · No discussion</span>
+    </div>
+
+    <p class="consent-summary"><strong>Three items</strong> flagged below for a second look. <strong>4 additional routine items</strong> packaged for a single vote — two liquor licenses and two budget true-ups.</p>
+
+    <div class="consent-list">
+      <div class="consent-row flagged">
+        <div class="marker">★</div>
+        <div class="name">New Housing Licensing Coordinator (1 FTE) — Neighborhood Services</div>
+        <div class="id">MOT 26-154</div>
+        <div class="why">A new full-time position created mid-fiscal-year with a budget amendment to follow. Worth tracking as the housing-licensing function expands.</div>
+      </div>
+      <div class="consent-row flagged">
+        <div class="marker">★</div>
+        <div class="name">Closed session minutes approval — 18 meeting dates spanning June 2024–March 2026</div>
+        <div class="id">MOT 26-163</div>
+        <div class="why">A 21-month backlog of unapproved closed-session minutes clears in one vote. Required under the Open Meetings Act but the volume suggests a process delay worth understanding.</div>
+      </div>
+      <div class="consent-row flagged">
+        <div class="marker">★</div>
+        <div class="name">FY25 year-end budget amendment</div>
+        <div class="id">ORD 26-134</div>
+        <div class="why">Adjusts FY25 appropriations to match actual revenues and expenditures — the final reconciliation of last year’s budget. Routine but reveals where the Village ran over or under.</div>
+      </div>
+      <div class="consent-row">
+        <div class="marker">•</div>
+        <div class="name">FY26 Q1 budget amendment</div>
+        <div class="id">ORD 26-135</div>
+      </div>
+      <div class="consent-row">
+        <div class="marker">•</div>
+        <div class="name">Bayan Ceramics — Class D-19 arts-and-craft liquor license</div>
+        <div class="id">ORD 26-137</div>
+      </div>
+      <div class="consent-row">
+        <div class="marker">•</div>
+        <div class="name">Pete’s Fresh Market #21 — Class C-1 package liquor license</div>
+        <div class="id">ORD 26-138</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- § IV — CIVIC NOTES (masonry) -->
+  <section class="section" style="padding-bottom: 4px;">
+    <div class="section-header">
+      <span class="section-num">§ IV</span>
+      <h2 class="section-title">Civic Notes</h2>
+      <span class="section-eyebrow">Proclamations · Appointments · Vacancies</span>
+    </div>
+
+    <div class="civic">
+
+      <div class="civic-block">
+        <div class="civic-label">Four Proclamations for May</div>
+        <div class="proc-list">
+          <div class="proc-row">
+            <div class="num">i.</div>
+            <div class="name">National Public Works Week</div>
+            <div class="when">May 17–23 · MOT 26-161</div>
+          </div>
+          <div class="proc-row">
+            <div class="num">ii.</div>
+            <div class="name">Older Americans Month &amp; Celebrating Seniors Week</div>
+            <div class="when">May / May 7–14 · MOT 26-164</div>
+          </div>
+          <div class="proc-row">
+            <div class="num">iii.</div>
+            <div class="name">APIDA Heritage Month</div>
+            <div class="when">May 2026 · MOT 26-165</div>
+          </div>
+          <div class="proc-row">
+            <div class="num">iv.</div>
+            <div class="name">Jewish American Heritage Month</div>
+            <div class="when">May 2026 · MOT 26-166</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="civic-block side">
+        <div class="civic-label">Open Vacancies</div>
+        <div class="body"><strong>23 seats open</strong> across the Village’s 18 citizen boards and commissions — applications via the Clerk’s Office.</div>
+        <div class="id">ID 26-334</div>
+      </div>
+
+      <div class="civic-block side">
+        <div class="civic-label">Eight Appointments</div>
+        <div class="body">Janet Lorch &amp; Marsha Spight to Aging in Communities; Dirk De Lor to the Citizens Police Oversight Committee; Branden McLeod to Community Relations; Tejas N. Shah reappointed to Environment &amp; Energy; Tamar Bobys &amp; Jay Ranz to the Farmers’ Market Commission; Jack Eskin reappointed to Transportation.</div>
+        <div class="id">MOT 26-167</div>
+      </div>
+
+    </div>
+  </section>
+
+
+
+  <!-- ============ COMPRESSED FOOTER STRIP ============ -->
+  <div class="footer-strip">
+    <div class="fs-panel">
+      <h2 class="fs-headline">Make your voice <span class="accent">heard.</span></h2>
+      <p class="fs-body">Public comments may be made at the start of the meeting and as agenda items are discussed. To comment virtually, contact the Clerk by <strong>5:00 PM May 12</strong> at <strong>708-358-5670</strong> or <a href="mailto:publiccomment@oak-park.us">publiccomment@oak-park.us</a>. Camera on, three minutes per speaker.</p>
+    </div>
+    <div class="fs-panel">
+      <div class="fs-label">Meeting Details</div>
+      <div class="fs-meta-grid">
+        <div class="fs-meta-cell">Tuesday, May 12</div>
+        <div class="fs-meta-cell">7:00 PM</div>
+        <div class="fs-meta-cell fs-meta-wide">Village Hall · Council Chambers</div>
+      </div>
+    </div>
+    <div class="fs-panel">
+      <div class="fs-label">Editor’s Note</div>
+      <p class="fs-editor">
+        A curated guide to the May 12, 2026 Village Board meeting, prepared by Trustee Cory J. Wesley. Source: the official agenda packet, available at <a href="https://www.oak-park.us/Government/Meetings/Village-Board-Agendas-Minutes-Videos">oak-park.us</a>. Reflects my own selection and framing — not an official Village communication.
+        <span class="signature">Cory J. <span class="wesley">Wesley</span><span class="pink"> · </span>Trustee</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="bottom-stripe"></div>
+
+</div>
+</body>
+</html>
