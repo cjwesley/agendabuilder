@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>The Agenda · May 5, 2026</title>
+<title>{{ issue.computed_page_title() }}</title>
 <style>
   :root {
     --ink:        #1a1a1a;
@@ -756,8 +756,8 @@
 
   <header class="masthead">
     <div class="masthead-top">
-      <div><a class="eyebrow-link" href="https://www.oak-park.us/Government/Meetings/Village-Board-Agendas-Minutes-Videos">Read the full agenda packet<span class="arrow">→</span></a></div>
-      <div class="right">Issue 03 · May 12, 2026</div>
+      <div><a class="eyebrow-link" href="{{ issue.masthead.eyebrow_link_url }}">{{ issue.masthead.eyebrow_link_text }}<span class="arrow">→</span></a></div>
+      <div class="right">{{ issue.issue_label() }}</div>
     </div>
 
     <div class="title-block">
@@ -766,206 +766,168 @@
         <span class="agenda">Agenda<span class="accent-bar"></span></span>
       </h1>
       <div class="title-side">
-        <p class="subtitle">A reader’s guide to the May 12 Village Board meeting — three study sessions on dispatch reform, pavement, and police oversight, plus a cohousing escrow waiver and a 7-item consent agenda.</p>
+        <p class="subtitle">{{ issue.masthead.subtitle }}</p>
       </div>
     </div>
 
     <div class="meta-row">
-      <div><strong>Convening</strong>Tuesday, May 12 · 7:00 PM</div>
-      <div><strong>Where</strong>Council Chambers, Village Hall</div>
-      <div><strong>How to Join</strong>In person, or virtually via the Clerk at <a href="mailto:clerkwaters@oak-park.us">clerkwaters@oak-park.us</a></div>
+      <div><strong>Convening</strong>{{ issue.masthead.meta.convening }}</div>
+      <div><strong>Where</strong>{{ issue.masthead.meta.where }}</div>
+      <div><strong>How to Join</strong>{{ issue.masthead.meta.how_to_join_html | safe }}</div>
     </div>
   </header>
 
   <section class="headlines">
+    {% for h in issue.headlines %}
     <div class="headline">
-      <div class="kicker">The Big Number</div>
-      <div class="figure">3</div>
-      <div class="caption">Study sessions on the agenda — CESSA mental-health dispatch, pavement management, and the CPOC semi-annual report.</div>
+      <div class="kicker">{{ h.kicker }}</div>
+      <div class="figure">{{ h.figure }}</div>
+      <div class="caption">{{ h.caption }}</div>
     </div>
-    <div class="headline">
-      <div class="kicker">On the Table</div>
-      <div class="figure">18</div>
-      <div class="caption">Closed-session meeting dates spanning June 2024–March 2026 — a 21-month minutes backlog clears in one consent vote.</div>
-    </div>
-    <div class="headline">
-      <div class="kicker">For the Calendar</div>
-      <div class="figure">4</div>
-      <div class="caption">May proclamations: Public Works Week, Older Americans, APIDA Heritage, Jewish American Heritage.</div>
-    </div>
+    {% endfor %}
   </section>
 
-  <!-- § I — STUDY SESSIONS (no Features this meeting; renumbered) -->
+  {% for roman, sec in issue.present_sections() %}
+  {% if sec.kind == "feature" %}
   <section class="section">
     <div class="section-header">
-      <span class="section-num">§ I</span>
-      <h2 class="section-title">Three Study Sessions</h2>
-      <span class="section-eyebrow">Discussion items · No votes</span>
+      <span class="section-num">§ {{ roman }}</span>
+      <h2 class="section-title">{{ sec.title }}</h2>
+      <span class="section-eyebrow">{{ sec.computed_eyebrow() }}</span>
     </div>
 
+    {% for article in sec.articles %}
+    <article class="feature">
+      <div class="feature-side">
+        <div class="feature-tag">{{ article.tag }}</div>
+        <h3 class="feature-headline">{{ article.headline }}</h3>
+        {% if article.legistar_ids %}<p class="feature-id">{{ article.legistar_ids | join_ids }}</p>{% endif %}
+      </div>
+      <div class="feature-body">
+        {{ article.body_md | markdown_with_dropcap | safe }}
+        {% if article.pullquote %}
+        <div class="pullquote">
+          <span class="label">{{ article.pullquote.label }}</span>
+          {{ article.pullquote.text }}
+        </div>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </section>
+  {% elif sec.kind == "study" %}
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">§ {{ roman }}</span>
+      <h2 class="section-title">{{ sec.title }}</h2>
+      <span class="section-eyebrow">{{ sec.computed_eyebrow() }}</span>
+    </div>
+
+    {% for item in sec.items %}
     <div class="study">
       <div class="study-mark">¶</div>
       <div>
-        <div class="study-tag">Study Session</div>
-        <h3 class="study-headline">CESSA: how the state’s mental-health dispatch law lands on Oak Park’s 911 system.</h3>
-        <p class="study-body">West Suburban Consolidated Dispatch Center (WSCDC) walks the Board through Community Emergency Services and Supports Act implementation — dispatch requirements, decision protocols, and the operational impact on the Village’s emergency response. CESSA reshapes how calls involving mental-health crises get routed; tonight’s presentation is about what that means at the dispatch board level.</p>
-        <p class="study-id">ID 26-230</p>
+        <div class="study-tag">{{ item.tag }}</div>
+        <h3 class="study-headline">{{ item.headline }}</h3>
+        <p class="study-body">{{ item.body }}</p>
+        {% if item.legistar_ids %}<p class="study-id">{{ item.legistar_ids | join_ids }}</p>{% endif %}
       </div>
     </div>
-
-    <div class="study">
-      <div class="study-mark">¶</div>
-      <div>
-        <div class="study-tag">Study Session</div>
-        <h3 class="study-headline">A pavement management plan, and the budget choices it forces.</h3>
-        <p class="study-body">CMAP’s consultant presents the Pavement Management Program developed under a 2025 technical assistance grant — a roadway condition assessment with budget scenarios for maintaining or improving the network. The recommendations feed directly into the upcoming budget and the 5-year Capital Improvement Plan. Tonight is the Board’s first look at the scenarios.</p>
-        <p class="study-id">ID 26-320</p>
-      </div>
-    </div>
+    {% endfor %}
   </section>
-
-  <!-- § II — REGULAR (compact spotlights) -->
+  {% elif sec.kind == "regular_compact" %}
   <section class="section">
     <div class="section-header">
-      <span class="section-num">§ II</span>
-      <h2 class="section-title">Also on the Regular Agenda</h2>
-      <span class="section-eyebrow">2 items · 1 vote, 1 report</span>
+      <span class="section-num">§ {{ roman }}</span>
+      <h2 class="section-title">{{ sec.title }}</h2>
+      <span class="section-eyebrow">{{ sec.computed_eyebrow() }}</span>
     </div>
 
     <div class="regular-list">
+      {% for item in sec.items %}
       <div class="regular-item">
-        <div class="ri-tag">Regular Agenda · Up for vote</div>
-        <div class="ri-name">Oak Park Commons Cohousing — escrow waiver request</div>
-        <div class="ri-id">RES 26-198</div>
-        <div class="ri-text">A waiver of the Village Code’s requirement that 2% of each unit’s sales price be held in escrow for 15 months for unexpected building repairs. The cohousing project is asking the Village to release that obligation.</div>
+        <div class="ri-tag">{{ item.tag }}</div>
+        <div class="ri-name">{{ item.name }}</div>
+        <div class="ri-id">{{ item.legistar_ids | join_ids }}</div>
+        <div class="ri-text">{{ item.text }}</div>
       </div>
-      <div class="regular-item">
-        <div class="ri-tag">Regular Agenda · Report received</div>
-        <div class="ri-name">CPOC semi-annual report</div>
-        <div class="ri-id">MOT 26-152</div>
-        <div class="ri-text">The Citizens Police Oversight Committee’s required semi-annual report on its activities and analysis over the preceding six months, per Village Code 2-30-2.</div>
-      </div>
+      {% endfor %}
     </div>
   </section>
-
-  <!-- § III — CONSENT -->
+  {% elif sec.kind == "consent" %}
   <section class="section">
     <div class="section-header">
-      <span class="section-num">§ III</span>
-      <h2 class="section-title">Consent Agenda</h2>
-      <span class="section-eyebrow">7 items · No discussion</span>
+      <span class="section-num">§ {{ roman }}</span>
+      <h2 class="section-title">{{ sec.title }}</h2>
+      <span class="section-eyebrow">{{ sec.computed_eyebrow() }}</span>
     </div>
 
-    <p class="consent-summary"><strong>Three items</strong> flagged below for a second look. <strong>4 additional routine items</strong> packaged for a single vote — two liquor licenses and two budget true-ups.</p>
+    <p class="consent-summary">{{ sec.summary | safe }}</p>
 
-    <div class="consent-list">
-      <div class="consent-row flagged">
-        <div class="marker">★</div>
-        <div class="name">New Housing Licensing Coordinator (1 FTE) — Neighborhood Services</div>
-        <div class="id">MOT 26-154</div>
-        <div class="why">A new full-time position created mid-fiscal-year with a budget amendment to follow. Worth tracking as the housing-licensing function expands.</div>
+    <div class="consent-list{% if sec.minimal %} consent-list-minimal{% endif %}">
+      {% for item in sec.visible_items() %}
+      <div class="consent-row{% if item.flag %} flagged{% endif %}">
+        <div class="marker">{% if item.flag %}★{% else %}•{% endif %}</div>
+        <div class="name">{{ item.name }}</div>
+        <div class="id">{{ item.legistar_id }}</div>
+        {% if item.flag and item.why %}<div class="why">{{ item.why }}</div>{% endif %}
       </div>
-      <div class="consent-row flagged">
-        <div class="marker">★</div>
-        <div class="name">Closed session minutes approval — 18 meeting dates spanning June 2024–March 2026</div>
-        <div class="id">MOT 26-163</div>
-        <div class="why">A 21-month backlog of unapproved closed-session minutes clears in one vote. Required under the Open Meetings Act but the volume suggests a process delay worth understanding.</div>
-      </div>
-      <div class="consent-row flagged">
-        <div class="marker">★</div>
-        <div class="name">FY25 year-end budget amendment</div>
-        <div class="id">ORD 26-134</div>
-        <div class="why">Adjusts FY25 appropriations to match actual revenues and expenditures — the final reconciliation of last year’s budget. Routine but reveals where the Village ran over or under.</div>
-      </div>
-      <div class="consent-row">
-        <div class="marker">•</div>
-        <div class="name">FY26 Q1 budget amendment</div>
-        <div class="id">ORD 26-135</div>
-      </div>
-      <div class="consent-row">
-        <div class="marker">•</div>
-        <div class="name">Bayan Ceramics — Class D-19 arts-and-craft liquor license</div>
-        <div class="id">ORD 26-137</div>
-      </div>
-      <div class="consent-row">
-        <div class="marker">•</div>
-        <div class="name">Pete’s Fresh Market #21 — Class C-1 package liquor license</div>
-        <div class="id">ORD 26-138</div>
-      </div>
+      {% endfor %}
     </div>
   </section>
-
-  <!-- § IV — CIVIC NOTES (masonry) -->
+  {% elif sec.kind == "civic_notes" %}
   <section class="section" style="padding-bottom: 4px;">
     <div class="section-header">
-      <span class="section-num">§ IV</span>
-      <h2 class="section-title">Civic Notes</h2>
-      <span class="section-eyebrow">Proclamations · Appointments · Vacancies</span>
+      <span class="section-num">§ {{ roman }}</span>
+      <h2 class="section-title">{{ sec.title }}</h2>
+      <span class="section-eyebrow">{{ sec.computed_eyebrow() }}</span>
     </div>
 
     <div class="civic">
-
+      {% for block in sec.blocks %}
+      {% if block.kind == "proclamations" %}
       <div class="civic-block">
-        <div class="civic-label">Four Proclamations for May</div>
+        <div class="civic-label">{{ block.label }}</div>
         <div class="proc-list">
+          {% for proc in block.items %}
           <div class="proc-row">
-            <div class="num">i.</div>
-            <div class="name">National Public Works Week</div>
-            <div class="when">May 17–23 · MOT 26-161</div>
+            <div class="num">{{ ["i","ii","iii","iv","v","vi","vii","viii","ix","x"][loop.index0] }}.</div>
+            <div class="name">{{ proc.name }}</div>
+            <div class="when">{{ proc.when }}</div>
           </div>
-          <div class="proc-row">
-            <div class="num">ii.</div>
-            <div class="name">Older Americans Month &amp; Celebrating Seniors Week</div>
-            <div class="when">May / May 7–14 · MOT 26-164</div>
-          </div>
-          <div class="proc-row">
-            <div class="num">iii.</div>
-            <div class="name">APIDA Heritage Month</div>
-            <div class="when">May 2026 · MOT 26-165</div>
-          </div>
-          <div class="proc-row">
-            <div class="num">iv.</div>
-            <div class="name">Jewish American Heritage Month</div>
-            <div class="when">May 2026 · MOT 26-166</div>
-          </div>
+          {% endfor %}
         </div>
       </div>
-
-      <div class="civic-block side">
-        <div class="civic-label">Open Vacancies</div>
-        <div class="body"><strong>23 seats open</strong> across the Village’s 18 citizen boards and commissions — applications via the Clerk’s Office.</div>
-        <div class="id">ID 26-334</div>
+      {% elif block.kind == "body" %}
+      <div class="civic-block{% if block.side %} side{% endif %}">
+        <div class="civic-label">{{ block.label }}</div>
+        <div class="body">{{ block.body_html | safe }}</div>
+        {% if block.legistar_id %}<div class="id">{{ block.legistar_id }}</div>{% endif %}
       </div>
-
-      <div class="civic-block side">
-        <div class="civic-label">Eight Appointments</div>
-        <div class="body">Janet Lorch &amp; Marsha Spight to Aging in Communities; Dirk De Lor to the Citizens Police Oversight Committee; Branden McLeod to Community Relations; Tejas N. Shah reappointed to Environment &amp; Energy; Tamar Bobys &amp; Jay Ranz to the Farmers’ Market Commission; Jack Eskin reappointed to Transportation.</div>
-        <div class="id">MOT 26-167</div>
-      </div>
-
+      {% endif %}
+      {% endfor %}
     </div>
   </section>
+  {% endif %}
+  {% endfor %}
 
-
-
-  <!-- ============ COMPRESSED FOOTER STRIP ============ -->
   <div class="footer-strip">
     <div class="fs-panel">
-      <h2 class="fs-headline">Make your voice <span class="accent">heard.</span></h2>
-      <p class="fs-body">Public comments may be made at the start of the meeting and as agenda items are discussed. To comment virtually, contact the Clerk by <strong>5:00 PM May 12</strong> at <strong>708-358-5670</strong> or <a href="mailto:publiccomment@oak-park.us">publiccomment@oak-park.us</a>. Camera on, three minutes per speaker.</p>
+      <h2 class="fs-headline">{{ issue.footer.headline_html | safe }}</h2>
+      <p class="fs-body">{{ issue.footer.public_comment_html | safe }}</p>
     </div>
     <div class="fs-panel">
       <div class="fs-label">Meeting Details</div>
       <div class="fs-meta-grid">
-        <div class="fs-meta-cell">Tuesday, May 12</div>
-        <div class="fs-meta-cell">7:00 PM</div>
-        <div class="fs-meta-cell fs-meta-wide">Village Hall · Council Chambers</div>
+        <div class="fs-meta-cell">{{ issue.footer.meeting_details.date_short }}</div>
+        <div class="fs-meta-cell">{{ issue.footer.meeting_details.time }}</div>
+        <div class="fs-meta-cell fs-meta-wide">{{ issue.footer.meeting_details.location }}</div>
       </div>
     </div>
     <div class="fs-panel">
-      <div class="fs-label">Editor’s Note</div>
+      <div class="fs-label">Editor's Note</div>
       <p class="fs-editor">
-        A curated guide to the May 12, 2026 Village Board meeting, prepared by Trustee Cory J. Wesley. Source: the official agenda packet, available at <a href="https://www.oak-park.us/Government/Meetings/Village-Board-Agendas-Minutes-Videos">oak-park.us</a>. Reflects my own selection and framing — not an official Village communication.
+        {{ issue.footer.editor_note_html | safe }}
         <span class="signature">Cory J. <span class="wesley">Wesley</span><span class="pink"> · </span>Trustee</span>
       </p>
     </div>

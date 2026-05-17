@@ -1,0 +1,159 @@
+# Issue 03 — May 12, 2026.
+# Mirrors oak_park_agenda_wesley_may12_pressuretest.html. The consent section's
+# stated count (7 items, 4 routine) is honored here in full — the reference HTML
+# only renders 6 rows due to an apparent omission of one routine item.
+issue_number: 3
+meeting_date: 2026-05-12
+
+masthead:
+  subtitle: >-
+    A reader's guide to the May 12 Village Board meeting — three study sessions on
+    dispatch reform, pavement, and police oversight, plus a cohousing escrow waiver
+    and a 7-item consent agenda.
+  meta:
+    convening: "Tuesday, May 12 · 7:00 PM"
+
+headlines:
+  - kicker: The Big Number
+    figure: "3"
+    caption: >-
+      Study sessions on the agenda — CESSA mental-health dispatch, pavement
+      management, and the CPOC semi-annual report.
+  - kicker: On the Table
+    figure: "18"
+    caption: >-
+      Closed-session meeting dates spanning June 2024–March 2026 — a 21-month minutes
+      backlog clears in one consent vote.
+  - kicker: For the Calendar
+    figure: "4"
+    caption: >-
+      May proclamations: Public Works Week, Older Americans, APIDA Heritage,
+      Jewish American Heritage.
+
+sections:
+  - kind: study
+    title: "Three Study Sessions"
+    eyebrow: "Discussion items · No votes"
+    items:
+      - tag: Study Session
+        headline: >-
+          CESSA: how the state's mental-health dispatch law lands on Oak Park's
+          911 system.
+        body: >-
+          West Suburban Consolidated Dispatch Center (WSCDC) walks the Board through
+          Community Emergency Services and Supports Act implementation — dispatch
+          requirements, decision protocols, and the operational impact on the Village's
+          emergency response. CESSA reshapes how calls involving mental-health crises
+          get routed; tonight's presentation is about what that means at the dispatch
+          board level.
+        legistar_ids: ["ID 26-230"]
+      - tag: Study Session
+        headline: "A pavement management plan, and the budget choices it forces."
+        body: >-
+          CMAP's consultant presents the Pavement Management Program developed under a
+          2025 technical assistance grant — a roadway condition assessment with budget
+          scenarios for maintaining or improving the network. The recommendations feed
+          directly into the upcoming budget and the 5-year Capital Improvement Plan.
+          Tonight is the Board's first look at the scenarios.
+        legistar_ids: ["ID 26-320"]
+
+  - kind: regular_compact
+    eyebrow: "2 items · 1 vote, 1 report"
+    items:
+      - tag: "Regular Agenda · Up for vote"
+        name: "Oak Park Commons Cohousing — escrow waiver request"
+        legistar_ids: ["RES 26-198"]
+        text: >-
+          A waiver of the Village Code's requirement that 2% of each unit's sales
+          price be held in escrow for 15 months for unexpected building repairs. The
+          cohousing project is asking the Village to release that obligation.
+      - tag: "Regular Agenda · Report received"
+        name: "CPOC semi-annual report"
+        legistar_ids: ["MOT 26-152"]
+        text: >-
+          The Citizens Police Oversight Committee's required semi-annual report on its
+          activities and analysis over the preceding six months, per Village Code 2-30-2.
+
+  - kind: consent
+    summary: >-
+      <strong>Three items</strong> flagged below for a second look.
+      <strong>4 additional routine items</strong> packaged for a single vote — two
+      liquor licenses and two budget true-ups.
+    items:
+      - name: "New Housing Licensing Coordinator (1 FTE) — Neighborhood Services"
+        legistar_id: "MOT 26-154"
+        flag: true
+        why: >-
+          A new full-time position created mid-fiscal-year with a budget amendment to
+          follow. Worth tracking as the housing-licensing function expands.
+      - name: "Closed session minutes approval — 18 dates, June 2024–March 2026"
+        legistar_id: "MOT 26-163"
+        flag: true
+        why: >-
+          A 21-month backlog of unapproved closed-session minutes clears in one vote.
+          Required under the Open Meetings Act but the volume suggests a process delay
+          worth understanding.
+      - name: "FY25 year-end budget amendment"
+        legistar_id: "ORD 26-134"
+        flag: true
+        why: >-
+          Adjusts FY25 appropriations to match actual revenues and expenditures — the
+          final reconciliation of last year's budget. Routine but reveals where the
+          Village ran over or under.
+      - name: "FY26 Q1 budget amendment"
+        legistar_id: "ORD 26-135"
+      - name: "FY26 mid-year cost-recovery true-up"
+        legistar_id: "ORD 26-136"
+      - name: "Bayan Ceramics — Class D-19 arts-and-craft liquor license"
+        legistar_id: "ORD 26-137"
+      - name: "Pete's Fresh Market #21 — Class C-1 package liquor license"
+        legistar_id: "ORD 26-138"
+
+  - kind: civic_notes
+    eyebrow: "Proclamations · Appointments · Vacancies"
+    blocks:
+      - kind: proclamations
+        label: "Four Proclamations for May"
+        items:
+          - name: "National Public Works Week"
+            when: "May 17–23 · MOT 26-161"
+          - name: "Older Americans Month & Celebrating Seniors Week"
+            when: "May / May 7–14 · MOT 26-164"
+          - name: "APIDA Heritage Month"
+            when: "May 2026 · MOT 26-165"
+          - name: "Jewish American Heritage Month"
+            when: "May 2026 · MOT 26-166"
+      - kind: body
+        label: "Open Vacancies"
+        side: true
+        body_html: >-
+          <strong>23 seats open</strong> across the Village's 18 citizen boards and
+          commissions — applications via the Clerk's Office.
+        legistar_id: "ID 26-334"
+      - kind: body
+        label: "Eight Appointments"
+        side: true
+        body_html: >-
+          Janet Lorch &amp; Marsha Spight to Aging in Communities; Dirk De Lor to the
+          Citizens Police Oversight Committee; Branden McLeod to Community Relations;
+          Tejas N. Shah reappointed to Environment &amp; Energy; Tamar Bobys &amp; Jay
+          Ranz to the Farmers' Market Commission; Jack Eskin reappointed to
+          Transportation.
+        legistar_id: "MOT 26-167"
+
+footer:
+  meeting_details:
+    date_short: "Tuesday, May 12"
+    time: "7:00 PM"
+    location: "Village Hall · Council Chambers"
+  public_comment_html: >-
+    Public comments may be made at the start of the meeting and as agenda items are
+    discussed. To comment virtually, contact the Clerk by <strong>5:00 PM May 12</strong>
+    at <strong>708-358-5670</strong> or
+    <a href="mailto:publiccomment@oak-park.us">publiccomment@oak-park.us</a>.
+    Camera on, three minutes per speaker.
+  editor_note_html: >-
+    A curated guide to the May 12, 2026 Village Board meeting, prepared by Trustee
+    Cory J. Wesley. Source: the official agenda packet, available at
+    <a href="https://www.oak-park.us/Government/Meetings/Village-Board-Agendas-Minutes-Videos">oak-park.us</a>.
+    Reflects my own selection and framing — not an official Village communication.

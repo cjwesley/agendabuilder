@@ -1,0 +1,165 @@
+# Issue 02 — February 10, 2026.
+# Mirrors oak_park_agenda_wesley_feb10_v7_masthead.html. Uses the consent.minimal
+# treatment (only flagged items render in the list; remaining routine items are
+# represented by the eyebrow count and summary prose).
+issue_number: 2
+meeting_date: 2026-02-10
+
+masthead:
+  subtitle: >-
+    A reader's guide to the February 10 Village Board meeting — the Keystone housing
+    acquisition, a $1.685M Municipal Campus design vote, a body-modification zoning
+    amendment, and a 13-item consent agenda.
+  meta:
+    convening: "Tuesday, Feb 10 · 7:00 PM"
+
+headlines:
+  - kicker: The Big Number
+    figure: "$1.685M"
+    caption: >-
+      Schematic design contract for the Police Department at 11 Madison and Village
+      Hall at 123 Madison — the next phase of the Municipal Campus project.
+  - kicker: On the Table
+    figure: "1106"
+    caption: >-
+      Madison Street — the Fellowship Christian Church property the Village would
+      acquire for Interfaith Housing's Keystone Apartments.
+  - kicker: For the Calendar
+    figure: "24"
+    caption: >-
+      Open seats across the Village's 18 citizen boards and commissions. Apply through
+      the Clerk's Office.
+
+sections:
+  - kind: feature
+    title: "Madison Street & the Municipal Campus"
+    eyebrow: "Two paired votes · Two big commitments"
+    articles:
+      - tag: "Housing on Madison Street"
+        headline: "1106 Madison: an acquisition, a development partner, and a vote that ties them together."
+        legistar_ids: ["RES 26-124", "ORD 26-109"]
+        body_md: |
+          Two motions land together. The first authorizes the Village to purchase the Fellowship Christian Church property at 1106 Madison Street. The second authorizes a development agreement with **Interfaith Housing Development Corporation** to advance the Keystone Apartments project on that site.
+
+          The acquisition is the precondition; the development agreement is the partnership that converts the site into housing. Approving one without the other doesn't make the project go.
+        pullquote:
+          label: "From the staff overview"
+          text: >-
+            To support the Keystone Apartment project at 1106 Madison Street — a
+            Development Agreement between the Village of Oak Park and Interfaith
+            Housing Development Corporation.
+      - tag: "Police HQ + Village Hall"
+        headline: "A preferred concept, then a $1.685M design contract — the Municipal Campus moves to schematic."
+        legistar_ids: ["MOT 26-104", "RES 26-113"]
+        body_md: |
+          After November's feedback session, Johnson Lasky Kindelin Architects returns with a refined Multi-site concept design and **two options for the Village Hall renovation**. Tuesday is the moment of selection — the Board picks the preferred concept and directs staff to advance it.
+
+          Paired with that decision: a $1,685,000 schematic design contract covering both the Police Department at 11 Madison and Village Hall at 123 Madison. A budget amendment will follow.
+
+          Translation: tonight's vote locks in which concept gets engineered next — layouts, materials, and refined cost estimates all come downstream.
+
+  - kind: regular_compact
+    eyebrow: "1 paired item up for vote"
+    items:
+      - tag: "Regular Agenda · Up for vote · Public hearing held"
+        name: "Body Modification Establishment — North Avenue zoning"
+        legistar_ids: ["ORD 26-104", "ORD 26-105"]
+        text: >-
+          Two companion ordinances from the Plan Commission: amend the NA — North Avenue
+          Zoning District to add "Body Modification Establishment" as a special use, then
+          grant a special use permit to TAT3 Chicago Inc. to operate at 6549 North Avenue.
+
+  - kind: consent
+    minimal: true
+    summary: >-
+      <strong>Four items</strong> flagged below for a second look.
+      <strong>9 additional routine items</strong> packaged for a single vote —
+      <strong>$1.43M total</strong> in financial commitments.
+    items:
+      - name: "Police Lieutenants & Sergeants CBA — Jan 2026 through Dec 2028"
+        legistar_id: "RES 26-135"
+        flag: true
+        why: >-
+          A successor collective bargaining agreement covering Police Sergeants, plus a
+          side letter on referral incentives. A multi-year labor commitment, locked in
+          tonight.
+      - name: "Village Board Protocols — 2026–2028"
+        legistar_id: "RES 26-140"
+        flag: true
+        why: >-
+          Sets the governance rules for the new Board term — internal procedures, meeting
+          norms, and committee structure.
+      - name: "Granicus subscription expansion — $179,489.65 / year"
+        legistar_id: "RES 26-129"
+        flag: true
+        why: >-
+          A recurring annual commitment, not a one-time buy — the Village's footprint on
+          a single resident-engagement platform expands.
+      - name: "BS&A ERP financial software upgrade — $234,335"
+        legistar_id: "RES 26-134"
+        flag: true
+        why: >-
+          A material new spend to replace the Village's core ERP — likely the start of a
+          multi-year migration with downstream training and integration costs.
+      # Remaining 9 routine items are represented in the eyebrow ("13 items") and
+      # summary prose ("9 additional routine items") but not rendered individually
+      # because the section is in minimal mode.
+      - name: "FY26 mid-year cost-recovery true-up — Public Works"
+        legistar_id: "ORD 26-110"
+      - name: "Water main lining contract — 600 N. Lombard"
+        legistar_id: "RES 26-141"
+      - name: "Salt shed roof replacement — $48,200"
+        legistar_id: "RES 26-142"
+      - name: "Routine traffic-calming installation — Garfield/Wesley"
+        legistar_id: "RES 26-143"
+      - name: "Class A liquor license renewal — Marion Street Cheese Market"
+        legistar_id: "ORD 26-112"
+      - name: "Class B liquor license renewal — Wild Onion Tied House"
+        legistar_id: "ORD 26-113"
+      - name: "Hazard mitigation grant acceptance — IEMA"
+        legistar_id: "RES 26-144"
+      - name: "Annual sidewalk replacement program — 2026 schedule"
+        legistar_id: "RES 26-145"
+      - name: "Approve minutes — January 27, 2026 regular meeting"
+        legistar_id: "MOT 26-115"
+
+  - kind: civic_notes
+    eyebrow: "Proclamation · Appointments · Vacancies"
+    blocks:
+      - kind: proclamations
+        label: "Proclamation for February"
+        items:
+          - name: "Black History Month"
+            when: "February 2026 · MOT 26-113"
+      - kind: body
+        label: "Appointments"
+        side: true
+        body_html: >-
+          Chris Saam to the Citizen Involvement Commission; Cathy A. Kiriakos to Civic
+          Information Systems; Bernhard Walke to the Disability Access Commission; Dave
+          Bates reappointed to Historic Preservation.
+        legistar_id: "MOT 26-116"
+      - kind: body
+        label: "Open Vacancies"
+        side: true
+        body_html: >-
+          <strong>24 seats open</strong> across the Village's 18 citizen boards and
+          commissions — applications via the Clerk's Office.
+        legistar_id: "ID 26-172"
+
+footer:
+  meeting_details:
+    date_short: "Tuesday, Feb 10"
+    time: "7:00 PM"
+    location: "Village Hall · Council Chambers"
+  public_comment_html: >-
+    Public comments may be made at the start of the meeting and as agenda items are
+    discussed. To comment virtually, contact the Clerk by <strong>5:00 PM Feb 10</strong>
+    at <strong>708-358-5670</strong> or
+    <a href="mailto:publiccomment@oak-park.us">publiccomment@oak-park.us</a>.
+    Camera on, three minutes per speaker.
+  editor_note_html: >-
+    A curated guide to the February 10, 2026 Village Board meeting, prepared by Trustee
+    Cory J. Wesley. Source: the official agenda packet, available at
+    <a href="https://www.oak-park.us/Government/Meetings/Village-Board-Agendas-Minutes-Videos">oak-park.us</a>.
+    Reflects my own selection and framing — not an official Village communication.

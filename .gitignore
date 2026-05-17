@@ -6,7 +6,8 @@ __pycache__/
 .env
 .env.local
 
-agendas/
+# agendas/ is tracked in dev (fixtures live here). In production, Fly mounts a
+# volume over this directory.
 out/
 
 .pytest_cache/
