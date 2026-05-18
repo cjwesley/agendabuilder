@@ -1,0 +1,42 @@
+# Fly.io configuration for The Agenda Engine.
+# Solo-author publication tool — single workspace, single user.
+
+app = "agenda-engine"
+primary_region = "ord"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Playwright image bundles its browser binaries at the default path; no
+  # override needed in production. PLAYWRIGHT_CHROMIUM_EXECUTABLE remains
+  # available as an escape hatch.
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Single-user workload — let the machine sleep when idle.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/healthz"
+
+[[mounts]]
+  source = "agenda_data"
+  destination = "/app/agendas"
+
+[[mounts]]
+  source = "agenda_renders"
+  destination = "/app/out"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 1024

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Editor · {{ issue.computed_page_title() }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='editor.css') }}">
+<script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+<script src="{{ url_for('static', filename='editor.js') }}" defer></script>
+</head>
+<body>
+<div class="editor-shell">
+
+  <div class="form-pane">
+    <div class="form-toolbar">
+      <div>
+        <h1>The Agenda Engine</h1>
+        <div class="issue-pill">{{ issue.issue_label() }}</div>
+      </div>
+      <div class="toolbar-actions">
+        <label style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ed-slate);">
+          <input type="radio" name="render-mode" value="live" class="mode-radio"> Live
+        </label>
+        <label style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ed-slate);">
+          <input type="radio" name="render-mode" value="manual" class="mode-radio"> Manual
+        </label>
+        <button id="render-now" type="button" class="btn"
+                hx-post="{{ url_for('preview_issue') }}"
+                hx-include="#issue-form"
+                hx-target="#preview-pane"
+                hx-swap="outerHTML">Render now</button>
+        <button id="export-png" type="button" class="btn"
+                data-render-url="{{ url_for('render_export', date_str=issue.meeting_date.isoformat()) }}">
+          Export PNG
+        </button>
+        <button id="legistar-pull" type="button" class="btn">Pull from Legistar</button>
+        <button form="issue-form" type="submit" class="primary"
+                formaction="{{ url_for('save_issue', date_str=issue.meeting_date.isoformat()) }}"
+                formmethod="post">Save</button>
+      </div>
+    </div>
+
+    <div class="form-pane-inner">
+      {% if flash %}<div class="flash {{ flash_kind or '' }}">{{ flash }}</div>{% endif %}
+
+      <form id="issue-form"
+            method="POST"
+            action="{{ url_for('save_issue', date_str=issue.meeting_date.isoformat()) }}"
+            hx-post="{{ url_for('preview_issue') }}"
+            hx-trigger="input changed delay:300ms, change"
+            hx-target="#preview-pane"
+            hx-swap="outerHTML">
+
+        <div class="form-section">
+          <div class="form-section-header"><h2>Issue</h2><span class="kind-pill">Header</span></div>
+          <div class="form-section-body">
+            <div class="form-row inline">
+              <div>
+                <label>Issue number</label>
+                <input type="number" name="issue_number" value="{{ issue.issue_number }}" min="1" max="999" required>
+              </div>
+              <div>
+                <label>Meeting date</label>
+                <input type="date" name="meeting_date" value="{{ issue.meeting_date.isoformat() }}" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Subtitle <span class="charcount"></span></label>
+              <textarea name="masthead.subtitle" rows="3" data-maxlen="280" required>{{ issue.masthead.subtitle }}</textarea>
+            </div>
+            <div class="form-row">
+              <label>Convening</label>
+              <input type="text" name="masthead.meta.convening" value="{{ issue.masthead.meta.convening }}" required>
+            </div>
+            <div class="form-row">
+              <label>Where</label>
+              <input type="text" name="masthead.meta.where" value="{{ issue.masthead.meta.where }}">
+            </div>
+            <div class="form-row">
+              <label>How-to-join (HTML allowed)</label>
+              <input type="text" name="masthead.meta.how_to_join_html" value="{{ issue.masthead.meta.how_to_join_html }}">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-header"><h2>Headlines</h2><span class="kind-pill">3 required</span></div>
+          <div class="form-section-body">
+            {% for h in issue.headlines %}
+            <div class="subform">
+              <div class="subform-header">Headline {{ loop.index }}</div>
+              <div class="form-row inline">
+                <div><label>Kicker <span class="charcount"></span></label><input type="text" name="headlines[{{ loop.index0 }}].kicker" value="{{ h.kicker }}" data-maxlen="22" required></div>
+                <div><label>Figure <span class="charcount"></span></label><input type="text" name="headlines[{{ loop.index0 }}].figure" value="{{ h.figure }}" data-maxlen="10" required></div>
+              </div>
+              <div class="form-row">
+                <label>Caption <span class="charcount"></span></label>
+                <textarea name="headlines[{{ loop.index0 }}].caption" rows="2" data-maxlen="180" required>{{ h.caption }}</textarea>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        {% for sec in issue.sections %}
+        {% set sec_idx = loop.index0 %}
+        {% include 'partials/form_section.html' %}
+        {% endfor %}
+
+        <div class="form-section">
+          <div class="form-section-header"><h2>Footer</h2><span class="kind-pill">Strip</span></div>
+          <div class="form-section-body">
+            <div class="form-row inline">
+              <div><label>Meeting date (short)</label><input type="text" name="footer.meeting_details.date_short" value="{{ issue.footer.meeting_details.date_short }}" required></div>
+              <div><label>Time</label><input type="text" name="footer.meeting_details.time" value="{{ issue.footer.meeting_details.time }}" required></div>
+            </div>
+            <div class="form-row">
+              <label>Location</label>
+              <input type="text" name="footer.meeting_details.location" value="{{ issue.footer.meeting_details.location }}">
+            </div>
+            <div class="form-row">
+              <label>Public-comment paragraph (HTML allowed)</label>
+              <textarea name="footer.public_comment_html" rows="4">{{ issue.footer.public_comment_html }}</textarea>
+            </div>
+            <div class="form-row">
+              <label>Editor's note (HTML allowed)</label>
+              <textarea name="footer.editor_note_html" rows="4" required>{{ issue.footer.editor_note_html }}</textarea>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  {# Initial preview-pane: srcdoc carries the snapshot HTML so subsequent
+     HTMX swaps replace this same shape. #}
+  <div id="preview-pane" class="preview-pane">
+    <iframe srcdoc="{{ initial_snapshot_html | e }}"></iframe>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ issue.computed_page_title() }}</title>
+<style>
+  :root {
+    --ink:        #1a1a1a;
+    --ink-soft:   #2a2a2a;
+    --paper:      #f6f1e6;
+    --paper-2:    #efe8d6;
+    --rule:       #1a1a1a;
+    --blue:       #38b6ff;
+    --blue-deep:  #1a9de8;
+    --blue-soft:  #d9eeff;
+    --pink:       #ff66c4;
+    --pink-hot:   #ff3eb6;
+    --pink-soft:  #ffd9ee;
+    --slate:      #5a5a5a;
+    --serif:      Georgia, "Times New Roman", "Liberation Serif", serif;
+    --sans:       "Helvetica Neue", Helvetica, Arial, "Liberation Sans", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #d2cdbf;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .page {
+    width: 1080px;
+    margin: 0 auto;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    position: relative;
+  }
+  .page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(26,26,26,0.025) 1px, transparent 1px);
+    background-size: 4px 4px;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .page > * { position: relative; z-index: 2; }
+
+  .top-stripe { height: 5px; background: var(--pink); }
+
+  /* ============ LOGO — height-capped ============ */
+  .logo-banner {
+    width: 100%;
+    height: 220px;
+    background: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+  }
+  .logo-banner img {
+    height: 100%;
+    width: auto;
+    display: block;
+  }
+
+  /* ============ MASTHEAD ============ */
+  .masthead {
+    padding: 16px 56px 14px;
+    border-bottom: 3px double var(--rule);
+  }
+  .masthead-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--slate);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+    font-weight: 700;
+  }
+  .masthead-top .right { color: var(--pink-hot); }
+  .masthead-top a.eyebrow-link {
+    color: var(--pink-hot);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--pink-hot);
+    padding-bottom: 1px;
+  }
+  .masthead-top a.eyebrow-link .arrow {
+    margin-left: 4px;
+  }
+
+  .title-block {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    padding-top: 8px;
+  }
+  .title {
+    font-family: var(--serif);
+    font-weight: 700;
+    color: var(--ink);
+    font-style: italic;
+    line-height: 0.9;
+    letter-spacing: -2px;
+  }
+  .title .the {
+    font-size: 22px;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 0;
+    letter-spacing: 0;
+    color: var(--ink-soft);
+  }
+  .title .agenda { font-size: 56px; display: block; }
+  .title .accent-bar {
+    display: inline-block;
+    width: 56px;
+    height: 4px;
+    background: var(--pink);
+    vertical-align: middle;
+    margin-left: 10px;
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+    max-width: 460px;
+  }
+  .title-side {
+    flex: 1;
+    padding-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .full-agenda-link {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pink-hot);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--pink-hot);
+    padding-bottom: 1px;
+    letter-spacing: 0.2px;
+  }
+  .full-agenda-link .arrow {
+    font-style: normal;
+    font-weight: 700;
+    margin-left: 4px;
+  }
+  .meta-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule);
+    font-size: 13px;
+    color: var(--ink);
+    letter-spacing: 0.3px;
+  }
+  .meta-row > div { flex: 1; }
+  .meta-row strong {
+    font-family: var(--sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 11px;
+    color: var(--pink-hot);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .meta-row a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--blue-deep);
+  }
+
+  /* ============ HEADLINES ============ */
+  .headlines {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    border-bottom: 3px solid var(--rule);
+  }
+  .headline {
+    padding: 14px 28px 14px;
+    border-right: 1px solid var(--rule);
+    position: relative;
+  }
+  .headline:last-child { border-right: none; }
+  .headline .kicker {
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--pink-hot);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .headline .figure {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 50px;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: var(--ink);
+  }
+  .headline .figure::after {
+    content: "";
+    display: block;
+    width: 28px;
+    height: 3px;
+    background: var(--pink);
+    margin-top: 6px;
+  }
+  .headline .caption {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    max-width: 280px;
+  }
+
+  /* ============ SECTIONS ============ */
+  .section { padding: 18px 56px 4px; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 8px;
+    position: relative;
+  }
+  .section-header::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100px;
+    height: 3px;
+    background: var(--pink);
+  }
+  .section-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--blue-deep);
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+  .section-eyebrow {
+    margin-left: auto;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--slate);
+  }
+
+  /* ============ FEATURE STORIES ============ */
+  .feature {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 24px;
+    padding: 4px 0 20px;
+    border-bottom: 1px solid rgba(26,26,26,0.18);
+  }
+  .feature:last-child { border-bottom: none; padding-bottom: 6px; }
+  .feature-side {
+    border-right: 1px solid rgba(26,26,26,0.18);
+    padding-right: 24px;
+  }
+  .feature-tag {
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--blue-deep);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .feature-headline {
+    font-family: var(--serif);
+    font-size: 26px;
+    line-height: 1.1;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+  .feature-id {
+    margin-top: 8px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--slate);
+  }
+  .feature-body { font-size: 14.5px; line-height: 1.55; color: var(--ink); }
+  .feature-body p { margin-bottom: 10px; }
+  .feature-body p:last-child { margin-bottom: 0; }
+  .feature-body strong {
+    color: var(--ink);
+    font-weight: 700;
+    background: linear-gradient(transparent 60%, var(--pink-soft) 60%);
+    padding: 0 2px;
+  }
+  .pullquote {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: var(--pink-soft);
+    border-left: 4px solid var(--pink);
+    font-family: var(--serif);
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink);
+    font-style: italic;
+  }
+  .pullquote .label {
+    display: block;
+    font-style: normal;
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--pink-hot);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .drop-cap::first-letter {
+    font-family: var(--serif);
+    font-size: 50px;
+    float: left;
+    line-height: 0.85;
+    padding: 6px 8px 0 0;
+    font-weight: 700;
+    color: var(--pink-hot);
+  }
+
+  /* ============ STUDY (BLUE BLOCK) ============ */
+  .study {
+    background: var(--blue);
+    color: var(--ink);
+    padding: 26px 32px;
+    margin: 6px 0 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 28px;
+    align-items: start;
+    border-top: 4px solid var(--ink);
+    border-bottom: 4px solid var(--pink);
+  }
+  .study-mark {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .study-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--ink);
+    background: var(--paper);
+    font-weight: 700;
+    padding: 4px 10px;
+    display: inline-block;
+  }
+  .study-headline {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 10px;
+    line-height: 1.15;
+    letter-spacing: -0.3px;
+    color: var(--ink);
+  }
+  .study-body {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 760px;
+  }
+  .study-id {
+    margin-top: 8px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--ink);
+    opacity: 0.75;
+  }
+
+  /* ============ REGULAR ITEMS (list of compact spotlights) ============ */
+  .regular-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .regular-item {
+    border: 2px solid var(--ink);
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .regular-item .ri-tag {
+    grid-column: 1 / -1;
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--pink-hot);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .regular-item .ri-name {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+  }
+  .regular-item .ri-id {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--slate);
+    white-space: nowrap;
+  }
+  .regular-item .ri-text {
+    grid-column: 1 / -1;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  /* ============ CONSENT LIST (austere by default) ============ */
+  .consent-summary {
+    font-family: var(--serif);
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: -6px 0 8px;
+    max-width: 880px;
+  }
+  .consent-summary strong {
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .consent-list-minimal {
+    border-top: 1px solid rgba(26,26,26,0.25);
+    border-bottom: 1px solid rgba(26,26,26,0.25);
+  }
+  .consent-meta {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13.5px;
+    color: var(--slate);
+    margin: -8px 0 12px;
+  }
+  .consent-list {
+    border-top: 1px solid rgba(26,26,26,0.25);
+    border-bottom: 1px solid rgba(26,26,26,0.25);
+    margin-top: 4px;
+  }
+  .consent-row {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 12px;
+    align-items: baseline;
+    padding: 3px 4px;
+    border-bottom: 1px solid rgba(26,26,26,0.10);
+  }
+  .consent-row:last-child { border-bottom: none; }
+
+  /* Visual group break: extra padding only, no extra line */
+  .consent-row.group-break {
+    margin-top: 4px;
+    padding-top: 12px;
+  }
+
+  /* Total row at the bottom of the financial group */
+  .consent-total-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: baseline;
+    padding: 14px 4px 4px;
+    margin-top: 6px;
+    border-top: 2px solid var(--ink);
+  }
+  .consent-total-row .total-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+  }
+  .consent-total-row .total-amount {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+  .consent-footnote {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--slate);
+    margin-top: 8px;
+    padding: 0 4px;
+  }
+  .consent-row .marker {
+    font-family: var(--serif);
+    font-size: 13px;
+    color: var(--slate);
+    font-weight: 700;
+    text-align: center;
+  }
+  .consent-row.flagged .marker {
+    color: var(--pink-hot);
+    font-size: 14px;
+  }
+  .consent-row .name {
+    font-family: var(--serif);
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.2px;
+    line-height: 1.2;
+  }
+  .consent-row .id {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--slate);
+    white-space: nowrap;
+  }
+  .consent-row .why {
+    grid-column: 2 / 4;
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.25;
+    margin-top: -3px;
+    padding-bottom: 2px;
+    font-style: italic;
+  }
+  .consent-row .why::before {
+    content: "";
+    display: none;
+  }
+
+  /* ============ CIVIC NOTES (masonry: items flow into 2 columns by height) ============ */
+  .civic {
+    column-count: 2;
+    column-gap: 32px;
+    column-rule: 1px solid rgba(26,26,26,0.18);
+    margin-top: 4px;
+  }
+  .civic-block {
+    break-inside: avoid;             /* keeps a block from splitting across columns */
+    margin-bottom: 14px;
+    display: inline-block;           /* required for column flow + break-inside */
+    width: 100%;
+  }
+  .civic-block:last-child { margin-bottom: 0; }
+
+  .civic-label {
+    font-family: var(--sans);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--pink-hot);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  /* Side-block label uses blue */
+  .civic-block.side .civic-label { color: var(--blue-deep); }
+
+  .proc-list { display: grid; gap: 6px; }
+  .proc-row {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 10px;
+    align-items: baseline;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(26,26,26,0.10);
+  }
+  .proc-row:last-child { border-bottom: none; }
+  .proc-row .num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--pink-hot);
+    font-weight: 700;
+  }
+  .proc-row .name {
+    font-family: var(--serif);
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+    letter-spacing: -0.2px;
+  }
+  .proc-row .when {
+    font-size: 11px;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    white-space: nowrap;
+  }
+  .civic-block .body {
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .civic-block .body strong { font-weight: 700; }
+  .civic-block .id {
+    margin-top: 4px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 11.5px;
+    color: var(--slate);
+  }
+
+  /* ============ COMPRESSED 3-PANEL FOOTER ============ */
+  .footer-strip {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1.4fr;
+    background: var(--ink);
+    color: var(--paper);
+    border-top: 5px solid var(--pink);
+    margin-top: 0;
+  }
+  .fs-panel {
+    padding: 22px 24px;
+    border-right: 1px solid rgba(255,255,255,0.12);
+  }
+  .fs-panel:last-child { border-right: none; }
+  .fs-label {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--pink);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .fs-headline {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    color: var(--paper);
+    letter-spacing: 0;
+  }
+  .fs-headline .accent { color: var(--blue); }
+  .fs-body {
+    font-family: var(--serif);
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(246,241,230,0.92);
+  }
+  .fs-body a {
+    color: var(--blue);
+    text-decoration: none;
+    border-bottom: 1px solid var(--blue);
+  }
+  .fs-body strong {
+    font-family: var(--sans);
+    font-weight: 700;
+    color: var(--paper);
+  }
+  .fs-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 14px;
+  }
+  .fs-meta-cell {
+    font-family: var(--serif);
+    font-size: 14px;
+    line-height: 1.3;
+    color: var(--paper);
+  }
+  .fs-meta-wide {
+    grid-column: 1 / -1;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 8px;
+    margin-top: 2px;
+  }
+  .fs-editor {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(246,241,230,0.78);
+  }
+  .fs-editor a {
+    color: var(--blue);
+    border-bottom: 1px solid var(--blue);
+    text-decoration: none;
+  }
+  .fs-editor .signature {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-family: var(--sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-size: 11px;
+    color: var(--paper);
+  }
+  .fs-editor .signature .pink { color: var(--pink); }
+  .fs-editor .signature .wesley {
+    background: linear-gradient(transparent 60%, rgba(255,102,196,0.35) 60%);
+    padding: 0 3px;
+  }
+  .bottom-stripe { height: 5px; background: var(--pink); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="top-stripe"></div>
+
+  <div class="logo-banner">
+    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="Cory J. Wesley · Oak Park Trustee" />
+  </div>
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <div><a class="eyebrow-link" href="{{ issue.masthead.eyebrow_link_url }}">{{ issue.masthead.eyebrow_link_text }}<span class="arrow">→</span></a></div>
+      <div class="right">{{ issue.issue_label() }}</div>
+    </div>
+
+    <div class="title-block">
+      <h1 class="title">
+        <span class="the">The</span>
+        <span class="agenda">Agenda<span class="accent-bar"></span></span>
+      </h1>
+      <div class="title-side">
+        <p class="subtitle">{{ issue.masthead.subtitle }}</p>
+      </div>
+    </div>
+
+    <div class="meta-row">
+      <div><strong>Convening</strong>{{ issue.masthead.meta.convening }}</div>
+      <div><strong>Where</strong>{{ issue.masthead.meta.where }}</div>
+      <div><strong>How to Join</strong>{{ issue.masthead.meta.how_to_join_html | safe }}</div>
+    </div>
+  </header>
+
+  <section class="headlines">
+    {% for h in issue.headlines %}
+    <div class="headline">
+      <div class="kicker">{{ h.kicker }}</div>
+      <div class="figure">{{ h.figure }}</div>
+      <div class="caption">{{ h.caption }}</div>
+    </div>
+    {% endfor %}
+  </section>
+
+  {% for roman, sec in issue.present_sections() %}
+  {% if sec.kind == "feature" %}
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">§ {{ roman }}</span>
+      <h2 class="section-title">{{ sec.title }}</h2>
+      <span class="section-eyebrow">{{ sec.computed_eyebrow() }}</span>
+    </div>
+
+    {% for article in sec.articles %}
+    <article class="feature">
+      <div class="feature-side">
+        <div class="feature-tag">{{ article.tag }}</div>
+        <h3 class="feature-headline">{{ article.headline }}</h3>
+        {% if article.legistar_ids %}<p class="feature-id">{{ article.legistar_ids | join_ids }}</p>{% endif %}
+      </div>
+      <div class="feature-body">
+        {{ article.body_md | markdown_with_dropcap | safe }}
+        {% if article.pullquote %}
+        <div class="pullquote">
+          <span class="label">{{ article.pullquote.label }}</span>
+          {{ article.pullquote.text }}
+        </div>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </section>
+  {% elif sec.kind == "study" %}
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">§ {{ roman }}</span>
+      <h2 class="section-title">{{ sec.title }}</h2>
+      <span class="section-eyebrow">{{ sec.computed_eyebrow() }}</span>
+    </div>
+
+    {% for item in sec.items %}
+    <div class="study">
+      <div class="study-mark">¶</div>
+      <div>
+        <div class="study-tag">{{ item.tag }}</div>
+        <h3 class="study-headline">{{ item.headline }}</h3>
+        <p class="study-body">{{ item.body }}</p>
+        {% if item.legistar_ids %}<p class="study-id">{{ item.legistar_ids | join_ids }}</p>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+  {% elif sec.kind == "regular_compact" %}
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">§ {{ roman }}</span>
+      <h2 class="section-title">{{ sec.title }}</h2>
+      <span class="section-eyebrow">{{ sec.computed_eyebrow() }}</span>
+    </div>
+
+    <div class="regular-list">
+      {% for item in sec.items %}
+      <div class="regular-item">
+        <div class="ri-tag">{{ item.tag }}</div>
+        <div class="ri-name">{{ item.name }}</div>
+        <div class="ri-id">{{ item.legistar_ids | join_ids }}</div>
+        <div class="ri-text">{{ item.text }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% elif sec.kind == "consent" %}
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">§ {{ roman }}</span>
+      <h2 class="section-title">{{ sec.title }}</h2>
+      <span class="section-eyebrow">{{ sec.computed_eyebrow() }}</span>
+    </div>
+
+    <p class="consent-summary">{{ sec.summary | safe }}</p>
+
+    <div class="consent-list{% if sec.minimal %} consent-list-minimal{% endif %}">
+      {% for item in sec.visible_items() %}
+      <div class="consent-row{% if item.flag %} flagged{% endif %}">
+        <div class="marker">{% if item.flag %}★{% else %}•{% endif %}</div>
+        <div class="name">{{ item.name }}</div>
+        <div class="id">{{ item.legistar_id }}</div>
+        {% if item.flag and item.why %}<div class="why">{{ item.why }}</div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% elif sec.kind == "civic_notes" %}
+  <section class="section" style="padding-bottom: 4px;">
+    <div class="section-header">
+      <span class="section-num">§ {{ roman }}</span>
+      <h2 class="section-title">{{ sec.title }}</h2>
+      <span class="section-eyebrow">{{ sec.computed_eyebrow() }}</span>
+    </div>
+
+    <div class="civic">
+      {% for block in sec.blocks %}
+      {% if block.kind == "proclamations" %}
+      <div class="civic-block">
+        <div class="civic-label">{{ block.label }}</div>
+        <div class="proc-list">
+          {% for proc in block.items %}
+          <div class="proc-row">
+            <div class="num">{{ ["i","ii","iii","iv","v","vi","vii","viii","ix","x"][loop.index0] }}.</div>
+            <div class="name">{{ proc.name }}</div>
+            <div class="when">{{ proc.when }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% elif block.kind == "body" %}
+      <div class="civic-block{% if block.side %} side{% endif %}">
+        <div class="civic-label">{{ block.label }}</div>
+        <div class="body">{{ block.body_html | safe }}</div>
+        {% if block.legistar_id %}<div class="id">{{ block.legistar_id }}</div>{% endif %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+  {% endfor %}
+
+  <div class="footer-strip">
+    <div class="fs-panel">
+      <h2 class="fs-headline">{{ issue.footer.headline_html | safe }}</h2>
+      <p class="fs-body">{{ issue.footer.public_comment_html | safe }}</p>
+    </div>
+    <div class="fs-panel">
+      <div class="fs-label">Meeting Details</div>
+      <div class="fs-meta-grid">
+        <div class="fs-meta-cell">{{ issue.footer.meeting_details.date_short }}</div>
+        <div class="fs-meta-cell">{{ issue.footer.meeting_details.time }}</div>
+        <div class="fs-meta-cell fs-meta-wide">{{ issue.footer.meeting_details.location }}</div>
+      </div>
+    </div>
+    <div class="fs-panel">
+      <div class="fs-label">Editor's Note</div>
+      <p class="fs-editor">
+        {{ issue.footer.editor_note_html | safe }}
+        <span class="signature">Cory J. <span class="wesley">Wesley</span><span class="pink"> · </span>Trustee</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="bottom-stripe"></div>
+
+</div>
+</body>
+</html>

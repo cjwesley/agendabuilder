@@ -1,0 +1,6 @@
+{# Preview-pane fragment returned by POST /preview. Wraps the snapshot in a
+   srcdoc'd iframe so the snapshot's own styles stay isolated inside the
+   preview frame. #}
+<div id="preview-pane" class="preview-pane">
+  <iframe srcdoc="{{ snapshot_html | e }}"></iframe>
+</div>

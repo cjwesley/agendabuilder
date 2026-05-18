@@ -1,0 +1,29 @@
+[project]
+name = "agenda-engine"
+version = "0.1.0"
+description = "Publication engine for Trustee Cory J. Wesley's recurring snapshots of Oak Park Village Board agendas."
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.0",
+    "gunicorn>=23.0",
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+    "markdown-it-py>=3.0",
+    "playwright>=1.47",
+    "httpx>=0.27",
+    "anthropic>=0.92",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+    "respx>=0.21",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]

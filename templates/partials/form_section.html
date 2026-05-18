@@ -1,0 +1,217 @@
+{# Dispatched per-section form partial. Expects: `sec` (the section), `sec_idx` (int). #}
+{% set p = 'sections[' ~ sec_idx ~ ']' %}
+
+<div class="form-section">
+  <div class="form-section-header">
+    <h2>{{ sec.title if sec.title is defined and sec.title else sec.kind | title }}</h2>
+    <span class="kind-pill">{{ sec.kind }}</span>
+  </div>
+  <div class="form-section-body">
+
+    <input type="hidden" name="{{ p }}.kind" value="{{ sec.kind }}">
+
+    {% if sec.kind in ("feature", "study", "regular_compact", "consent", "civic_notes") %}
+      <div class="form-row">
+        <label>Section title</label>
+        <input type="text" name="{{ p }}.title" value="{{ sec.title }}">
+      </div>
+    {% endif %}
+
+    {% if sec.kind != "consent" %}
+      <div class="form-row">
+        <label>Eyebrow (override; blank = auto)</label>
+        <input type="text" name="{{ p }}.eyebrow" value="{{ sec.eyebrow or '' }}">
+      </div>
+    {% endif %}
+
+    {# ============ FEATURE ============ #}
+    {% if sec.kind == "feature" %}
+      {% for a in sec.articles %}
+      {% set ap = p ~ '.articles[' ~ loop.index0 ~ ']' %}
+      <div class="subform">
+        <div class="subform-header">
+          <span>Article {{ loop.index }}</span>
+          <button type="button" class="btn draft-btn"
+                  data-kind="feature"
+                  data-section-idx="{{ sec_idx }}"
+                  data-article-idx="{{ loop.index0 }}"
+                  data-target="{{ ap }}">Draft with AI</button>
+        </div>
+        <div class="form-row inline">
+          <div><label>Tag</label><input type="text" name="{{ ap }}.tag" value="{{ a.tag }}" required></div>
+          <div><label>Legistar IDs (comma-sep on save TBD; one per index)</label>
+            {% for lid in a.legistar_ids %}
+            <input type="text" name="{{ ap }}.legistar_ids[{{ loop.index0 }}]" value="{{ lid }}" style="margin-bottom:4px;">
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Headline <span class="charcount"></span></label>
+          <textarea name="{{ ap }}.headline" rows="2" data-maxlen="120" required>{{ a.headline }}</textarea>
+        </div>
+        <div class="form-row">
+          <label>Body (markdown; first paragraph gets the drop cap)</label>
+          <textarea name="{{ ap }}.body_md" rows="8" required>{{ a.body_md }}</textarea>
+        </div>
+        <div class="form-row inline">
+          <div>
+            <label>Pullquote label (optional)</label>
+            <input type="text" name="{{ ap }}.pullquote.label" value="{{ a.pullquote.label if a.pullquote else '' }}">
+          </div>
+          <div>
+            <label>Pullquote text</label>
+            <input type="text" name="{{ ap }}.pullquote.text" value="{{ a.pullquote.text if a.pullquote else '' }}">
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    {# ============ STUDY ============ #}
+    {% elif sec.kind == "study" %}
+      {% for it in sec.items %}
+      {% set ip = p ~ '.items[' ~ loop.index0 ~ ']' %}
+      <div class="subform">
+        <div class="subform-header">
+          <span>Study item {{ loop.index }}</span>
+          <button type="button" class="btn draft-btn"
+                  data-kind="study"
+                  data-section-idx="{{ sec_idx }}"
+                  data-item-idx="{{ loop.index0 }}"
+                  data-target="{{ ip }}">Draft with AI</button>
+        </div>
+        <div class="form-row inline">
+          <div><label>Tag</label><input type="text" name="{{ ip }}.tag" value="{{ it.tag }}"></div>
+          <div><label>Legistar IDs</label>
+            {% for lid in it.legistar_ids %}
+            <input type="text" name="{{ ip }}.legistar_ids[{{ loop.index0 }}]" value="{{ lid }}" style="margin-bottom:4px;">
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Headline</label>
+          <textarea name="{{ ip }}.headline" rows="2" required>{{ it.headline }}</textarea>
+        </div>
+        <div class="form-row">
+          <label>Body</label>
+          <textarea name="{{ ip }}.body" rows="6" required>{{ it.body }}</textarea>
+        </div>
+      </div>
+      {% endfor %}
+
+    {# ============ REGULAR ============ #}
+    {% elif sec.kind == "regular_compact" %}
+      {% for it in sec.items %}
+      {% set ip = p ~ '.items[' ~ loop.index0 ~ ']' %}
+      <div class="subform">
+        <div class="subform-header">
+          <span>Regular item {{ loop.index }}</span>
+          <button type="button" class="btn draft-btn"
+                  data-kind="compact"
+                  data-section-idx="{{ sec_idx }}"
+                  data-item-idx="{{ loop.index0 }}"
+                  data-target="{{ ip }}">Draft note with AI</button>
+        </div>
+        <div class="form-row">
+          <label>Tag</label>
+          <input type="text" name="{{ ip }}.tag" value="{{ it.tag }}" required>
+        </div>
+        <div class="form-row">
+          <label>Name</label>
+          <input type="text" name="{{ ip }}.name" value="{{ it.name }}" required>
+        </div>
+        <div class="form-row">
+          <label>Legistar IDs</label>
+          {% for lid in it.legistar_ids %}
+          <input type="text" name="{{ ip }}.legistar_ids[{{ loop.index0 }}]" value="{{ lid }}" style="margin-bottom:4px;">
+          {% endfor %}
+        </div>
+        <div class="form-row">
+          <label>Text</label>
+          <textarea name="{{ ip }}.text" rows="3" required>{{ it.text }}</textarea>
+        </div>
+      </div>
+      {% endfor %}
+
+    {# ============ CONSENT ============ #}
+    {% elif sec.kind == "consent" %}
+      <div class="form-row">
+        <label>
+          <input type="hidden" name="{{ p }}.minimal" value="false">
+          <input type="checkbox" name="{{ p }}.minimal" value="true" {% if sec.minimal %}checked{% endif %} style="width:auto;margin-right:6px;">
+          Minimal mode (only flagged items render; eyebrow still shows full count)
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Summary prose (HTML allowed)</label>
+        <textarea name="{{ p }}.summary" rows="3" required>{{ sec.summary }}</textarea>
+      </div>
+      {% for it in sec.items %}
+      {% set ip = p ~ '.items[' ~ loop.index0 ~ ']' %}
+      <div class="subform">
+        <div class="subform-header">Item {{ loop.index }} ({{ 'flagged' if it.flag else 'routine' }})</div>
+        <div class="form-row inline">
+          <div>
+            <label>
+              <input type="hidden" name="{{ ip }}.flag" value="false">
+              <input type="checkbox" name="{{ ip }}.flag" value="true" {% if it.flag %}checked{% endif %} style="width:auto;margin-right:6px;">
+              Flag (star + commentary)
+            </label>
+          </div>
+          <div><label>Legistar ID</label><input type="text" name="{{ ip }}.legistar_id" value="{{ it.legistar_id }}"></div>
+        </div>
+        <div class="form-row">
+          <label>Name <span class="charcount"></span></label>
+          <input type="text" name="{{ ip }}.name" value="{{ it.name }}" data-maxlen="80" required>
+        </div>
+        {% if it.flag %}
+        <div class="form-row">
+          <label>Why-it-matters (shown only when flagged)</label>
+          <textarea name="{{ ip }}.why" rows="2">{{ it.why }}</textarea>
+        </div>
+        {% else %}
+        <input type="hidden" name="{{ ip }}.why" value="{{ it.why }}">
+        {% endif %}
+      </div>
+      {% endfor %}
+
+    {# ============ CIVIC NOTES ============ #}
+    {% elif sec.kind == "civic_notes" %}
+      {% for b in sec.blocks %}
+      {% set bp = p ~ '.blocks[' ~ loop.index0 ~ ']' %}
+      <div class="subform">
+        <div class="subform-header">Block {{ loop.index }} · {{ b.kind }}</div>
+        <input type="hidden" name="{{ bp }}.kind" value="{{ b.kind }}">
+        <div class="form-row">
+          <label>Label</label>
+          <input type="text" name="{{ bp }}.label" value="{{ b.label }}" required>
+        </div>
+        {% if b.kind == "proclamations" %}
+          {% for pr in b.items %}
+          {% set pp = bp ~ '.items[' ~ loop.index0 ~ ']' %}
+          <div class="form-row inline">
+            <div><label>Name</label><input type="text" name="{{ pp }}.name" value="{{ pr.name }}" required></div>
+            <div><label>When</label><input type="text" name="{{ pp }}.when" value="{{ pr.when }}" required></div>
+          </div>
+          {% endfor %}
+        {% elif b.kind == "body" %}
+          <div class="form-row inline">
+            <div>
+              <label>
+                <input type="hidden" name="{{ bp }}.side" value="false">
+                <input type="checkbox" name="{{ bp }}.side" value="true" {% if b.side %}checked{% endif %} style="width:auto;margin-right:6px;">
+                Side block (blue label)
+              </label>
+            </div>
+            <div><label>Legistar ID</label><input type="text" name="{{ bp }}.legistar_id" value="{{ b.legistar_id }}"></div>
+          </div>
+          <div class="form-row">
+            <label>Body (HTML allowed)</label>
+            <textarea name="{{ bp }}.body_html" rows="3" required>{{ b.body_html }}</textarea>
+          </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% endif %}
+
+  </div>
+</div>

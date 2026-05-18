@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+.venv/
+.env
+.env.local
+
+# agendas/ is tracked in dev (fixtures live here). In production, Fly mounts a
+# volume over this directory.
+out/
+
+.pytest_cache/
+.ruff_cache/
+
+.DS_Store
